@@ -1,6 +1,15 @@
 import { openDB, DBSchema } from 'idb';
 import { Bin, Alert, Collection } from '@/types/models';
 
+// Interface untuk pending updates
+interface PendingUpdate {
+  id?: string;
+  url: string;
+  method: string;
+  payload: unknown;
+  timestamp: number;
+}
+
 interface SmartDustbinDB extends DBSchema {
   bins: {
     key: string;
@@ -19,13 +28,7 @@ interface SmartDustbinDB extends DBSchema {
   };
   pendingUpdates: {
     key: string;
-    value: {
-      id?: string;
-      url: string;
-      method: string;
-      payload: any;
-      timestamp: number;
-    };
+    value: PendingUpdate;
   };
 }
 
@@ -62,7 +65,7 @@ export const offlineDB = {
   },
   
   // Add a pending update for when online
-  async addPendingUpdate(url: string, method: string, payload: any): Promise<IDBValidKey> {
+  async addPendingUpdate(url: string, method: string, payload: unknown): Promise<IDBValidKey> {
     const db = await dbPromise;
     return db.add('pendingUpdates', {
       url,
