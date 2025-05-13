@@ -15,6 +15,14 @@ const nextConfig = {
     domains: [],
     formats: ['image/avif', 'image/webp'],
   },
+  // Menambahkan output standalone untuk Vercel
+  output: 'standalone',
+  // Mengatasi masalah dengan pustaka eksternal server
+  experimental: {
+    serverActions: {
+      allowedOrigins: ['localhost:3000', '*.vercel.app'],
+    },
+  },
 };
 
 module.exports = withPWA(nextConfig); 
