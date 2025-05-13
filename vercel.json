@@ -1,12 +1,4 @@
 {
   "version": 2,
-  "buildCommand": "npm run build",
-  "framework": "nextjs",
-  "installCommand": "npm install",
-  "outputDirectory": ".next",
-  "public": true,
-  "regions": ["sin1"],
-  "env": {
-    "NODE_ENV": "production"
-  }
+  "framework": "nextjs"
 }

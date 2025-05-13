@@ -21,7 +21,7 @@ export default function Sidebar() {
       <nav className="mt-6">
         <ul>
           <li>
-            <Link href="/dashboard" className={`block px-4 py-2 ${isActive('/dashboard')}`}>
+            <Link href="/" className={`block px-4 py-2 ${isActive('/')}`}>
               Dashboard
             </Link>
           </li>

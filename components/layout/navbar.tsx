@@ -29,7 +29,7 @@ export default function Navbar() {
             <div className="ml-10 flex items-center space-x-4">
               {user ? (
                 <>
-                  <Link href="/dashboard" className="px-3 py-2 rounded-md text-sm font-medium hover:bg-blue-700">
+                  <Link href="/" className="px-3 py-2 rounded-md text-sm font-medium hover:bg-blue-700">
                     Dashboard
                   </Link>
                   <Link href="/map" className="px-3 py-2 rounded-md text-sm font-medium hover:bg-blue-700">
@@ -105,7 +105,7 @@ export default function Navbar() {
           {user ? (
             <>
               <Link
-                href="/dashboard"
+                href="/"
                 className="block px-3 py-2 rounded-md text-base font-medium hover:bg-blue-700"
               >
                 Dashboard

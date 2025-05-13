@@ -16,8 +16,6 @@
 # next.js
 /.next/
 /out/
-# Kecuali file penting untuk Vercel
-!/.next/server/app/(dashboard)/page_client-reference-manifest.js
 
 # production
 /build
