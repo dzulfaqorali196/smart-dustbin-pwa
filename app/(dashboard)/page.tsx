@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Bin } from '@/types/bin';
 
 // Mock data - pada implementasi nyata, data akan diambil dari API/Supabase
@@ -38,12 +38,8 @@ const MOCK_BINS: Bin[] = [
 ];
 
 export default function DashboardPage() {
-  const [bins, setBins] = useState<Bin[]>([]);
-  
-  useEffect(() => {
-    // Simulasi fetch data
-    setBins(MOCK_BINS);
-  }, []);
+  // Gunakan useState tanpa useEffect untuk menghindari masalah client reference
+  const [bins] = useState<Bin[]>(MOCK_BINS);
 
   const totalBins = bins.length;
   const activeBins = bins.filter(bin => bin.isActive).length;
@@ -51,7 +47,7 @@ export default function DashboardPage() {
 
   return (
     <div>
-      <h1 className="mb-6">Dashboard</h1>
+      <h1 className="mb-6 text-2xl font-bold">Dashboard</h1>
       
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         {/* Kartu Total Tempat Sampah */}

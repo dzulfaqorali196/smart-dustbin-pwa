@@ -19,14 +19,31 @@ body {
   background: rgb(var(--background-rgb));
 }
 
-@layer base {
+h1 {
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+h2 {
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+h3 {
+  font-size: 1.125rem;
+  font-weight: 700;
+}
+
+@media (min-width: 768px) {
   h1 {
-    @apply text-2xl font-bold md:text-3xl;
+    font-size: 1.875rem;
   }
+  
   h2 {
-    @apply text-xl font-bold md:text-2xl;
+    font-size: 1.5rem;
   }
+  
   h3 {
-    @apply text-lg font-bold md:text-xl;
+    font-size: 1.25rem;
   }
 } 
