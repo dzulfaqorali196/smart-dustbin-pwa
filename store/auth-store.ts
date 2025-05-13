@@ -8,7 +8,7 @@ interface AuthState {
   error: string | null;
   
   // Auth actions
-  signIn: (email: string, password: string) => Promise<void>;
+  signIn: (email: string, password: string) => Promise<{ error?: string }>;
   signUp: (email: string, password: string, name: string) => Promise<void>;
   signOut: () => Promise<void>;
   resetPassword: (email: string) => Promise<void>;
@@ -33,11 +33,18 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         password,
       });
       
-      if (error) throw error;
+      if (error) {
+        set({ error: error.message, isLoading: false });
+        return { error: error.message };
+      }
+      
       set({ user: data.user, isLoading: false });
+      return {};
     } catch (error: any) {
       console.error('Sign in error:', error);
-      set({ error: error.message || 'Failed to sign in', isLoading: false });
+      const errorMessage = error.message || 'Failed to sign in';
+      set({ error: errorMessage, isLoading: false });
+      return { error: errorMessage };
     }
   },
 
