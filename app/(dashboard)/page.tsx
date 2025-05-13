@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Bin } from '@/types/bin';
 
 // Mock data - pada implementasi nyata, data akan diambil dari API/Supabase
@@ -55,41 +54,45 @@ export default function DashboardPage() {
       <h1 className="mb-6">Dashboard</h1>
       
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <Card>
-          <CardHeader>
-            <CardTitle>Total Tempat Sampah</CardTitle>
-          </CardHeader>
-          <CardContent>
+        {/* Kartu Total Tempat Sampah */}
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden">
+          <div className="p-4 border-b border-gray-200 dark:border-gray-700">
+            <h3 className="text-lg font-semibold">Total Tempat Sampah</h3>
+          </div>
+          <div className="p-4">
             <p className="text-3xl font-bold">{totalBins}</p>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Tempat Sampah Aktif</CardTitle>
-          </CardHeader>
-          <CardContent>
+        {/* Kartu Tempat Sampah Aktif */}
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden">
+          <div className="p-4 border-b border-gray-200 dark:border-gray-700">
+            <h3 className="text-lg font-semibold">Tempat Sampah Aktif</h3>
+          </div>
+          <div className="p-4">
             <p className="text-3xl font-bold">{activeBins}</p>
             <p className="text-sm text-gray-500">{Math.round((activeBins / totalBins) * 100)}% dari total</p>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Butuh Perhatian</CardTitle>
-          </CardHeader>
-          <CardContent>
+        {/* Kartu Butuh Perhatian */}
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden">
+          <div className="p-4 border-b border-gray-200 dark:border-gray-700">
+            <h3 className="text-lg font-semibold">Butuh Perhatian</h3>
+          </div>
+          <div className="p-4">
             <p className="text-3xl font-bold">{needsAttention}</p>
             <p className="text-sm text-gray-500">Tempat sampah hampir penuh</p>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </div>
 
-      <Card className="mb-6">
-        <CardHeader>
-          <CardTitle>Status Tempat Sampah</CardTitle>
-        </CardHeader>
-        <CardContent>
+      {/* Tabel Status Tempat Sampah */}
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden mb-6">
+        <div className="p-4 border-b border-gray-200 dark:border-gray-700">
+          <h3 className="text-lg font-semibold">Status Tempat Sampah</h3>
+        </div>
+        <div className="p-4">
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
@@ -137,8 +140,8 @@ export default function DashboardPage() {
               </tbody>
             </table>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   );
 } 
