@@ -20,6 +20,14 @@
 # production
 /build
 
+# PWA files
+**/public/sw.js
+**/public/workbox-*.js
+**/public/worker-*.js
+**/public/sw.js.map
+**/public/workbox-*.js.map
+**/public/worker-*.js.map
+
 # misc
 .DS_Store
 *.pem
@@ -39,3 +47,11 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Editor directories
+.idea/
+.vscode/
+*.sublime-workspace
+
+# OS generated files
+Thumbs.db
