@@ -22,6 +22,19 @@ Aplikasi Progressive Web App (PWA) untuk sistem monitoring tempat sampah pintar 
 - Zustand (State Management)
 - PWA (Progressive Web App)
 
+## Konfigurasi Supabase
+
+1. Buat akun di [Supabase](https://supabase.com)
+2. Buat proyek baru
+3. Dapatkan URL Supabase dan Anon Key dari pengaturan proyek Anda
+4. Buat file `.env.local` di root proyek dengan konten berikut:
+   ```
+   NEXT_PUBLIC_SUPABASE_URL=your-supabase-url
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=your-supabase-anon-key
+   ```
+5. Aktifkan Authentication di Supabase dashboard
+6. Konfigurasi Email Authentication di Supabase
+
 ## Cara Menjalankan
 
 1. Clone repositori
@@ -35,12 +48,14 @@ Aplikasi Progressive Web App (PWA) untuk sistem monitoring tempat sampah pintar 
    npm install
    ```
 
-3. Jalankan dalam mode development
+3. Buat file `.env.local` dengan konfigurasi Supabase Anda
+
+4. Jalankan dalam mode development
    ```bash
    npm run dev
    ```
 
-4. Build untuk production
+5. Build untuk production
    ```bash
    npm run build
    npm start
@@ -54,6 +69,16 @@ Aplikasi ini mendukung PWA dan dapat diinstal di perangkat mobile dan desktop. F
 npm run build
 npm start
 ```
+
+## Struktur Folder
+
+- `app/` - Routing dan halaman (Next.js App Router)
+  - `(auth)` - Halaman autentikasi (sign in, sign up)
+  - `(dashboard)` - Halaman dashboard setelah login
+- `components/` - Komponen React yang dapat digunakan kembali
+- `store/` - State management dengan Zustand
+- `lib/` - Utility, helpers, dan konfigurasi
+- `public/` - Aset statis dan file PWA
 
 ## Lisensi
 
