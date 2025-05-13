@@ -8,12 +8,13 @@ const withPWA = require('next-pwa')({
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  output: 'standalone',
-  experimental: {
-    serverComponentsExternalPackages: ['next-pwa']
+  // Mengatur timeout yang lebih lama untuk generasi halaman statis
+  staticPageGenerationTimeout: 300,
+  // Mengatur opsi khusus untuk Vercel
+  images: {
+    domains: [],
+    formats: ['image/avif', 'image/webp'],
   },
-  // Mengatasi masalah dengan komponen klien di Vercel
-  transpilePackages: ['next-pwa']
 };
 
 module.exports = withPWA(nextConfig); 
