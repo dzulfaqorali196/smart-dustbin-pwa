@@ -5,7 +5,7 @@ import Link from "next/link"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { motion } from "framer-motion"
+import { motion, HTMLMotionProps } from "framer-motion"
 import { toast } from "sonner"
 import { useSearchParams } from "next/navigation"
 import { useAuthStore } from "@/store/auth-store"
@@ -59,7 +59,7 @@ export default function Home() {
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ delay: 0.2, duration: 0.5 }}
-            className="relative h-48 w-48 mb-6"
+            style={{ position: 'relative', height: '12rem', width: '12rem', marginBottom: '1.5rem' }}
           >
             <Image
               src="/img/smart-dustbin-illustration.svg"
@@ -74,7 +74,7 @@ export default function Home() {
             initial={{ y: 10, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 0.3, duration: 0.4 }}
-            className="mb-8"
+            style={{ marginBottom: '2rem' }}
           >
             <h1 className="text-3xl font-bold mb-2">
               Smart Dustbin <Badge className="ml-1 bg-white/20 text-white">PWA</Badge>
@@ -123,9 +123,17 @@ export default function Home() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
               {/* Feature 1 */}
               <motion.div
-                whileHover={{ scale: 1.02 }}
+                whileHover={{ 
+                  scale: 1.02,
+                  borderColor: 'rgba(34, 197, 94, 0.3)'
+                }}
                 transition={{ type: "spring", stiffness: 400, damping: 10 }}
-                className="bg-gray-800/50 rounded-lg p-5 border border-gray-700/50 hover:border-green-500/30 transition-colors"
+                style={{
+                  backgroundColor: 'rgba(31, 41, 55, 0.5)',
+                  borderRadius: '0.5rem',
+                  padding: '1.25rem',
+                  border: '1px solid rgba(55, 65, 81, 0.5)',
+                }}
               >
                 <div className="w-10 h-10 rounded-lg bg-green-500/20 flex items-center justify-center text-green-400 mb-3">
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
@@ -144,9 +152,17 @@ export default function Home() {
               
               {/* Feature 2 */}
               <motion.div
-                whileHover={{ scale: 1.02 }}
+                whileHover={{ 
+                  scale: 1.02,
+                  borderColor: 'rgba(34, 197, 94, 0.3)'
+                }}
                 transition={{ type: "spring", stiffness: 400, damping: 10 }}
-                className="bg-gray-800/50 rounded-lg p-5 border border-gray-700/50 hover:border-green-500/30 transition-colors"
+                style={{
+                  backgroundColor: 'rgba(31, 41, 55, 0.5)',
+                  borderRadius: '0.5rem',
+                  padding: '1.25rem',
+                  border: '1px solid rgba(55, 65, 81, 0.5)',
+                }}
               >
                 <div className="w-10 h-10 rounded-lg bg-green-500/20 flex items-center justify-center text-green-400 mb-3">
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
@@ -166,9 +182,17 @@ export default function Home() {
               
               {/* Feature 3 */}
               <motion.div
-                whileHover={{ scale: 1.02 }}
+                whileHover={{ 
+                  scale: 1.02,
+                  borderColor: 'rgba(34, 197, 94, 0.3)'
+                }}
                 transition={{ type: "spring", stiffness: 400, damping: 10 }}
-                className="bg-gray-800/50 rounded-lg p-5 border border-gray-700/50 hover:border-green-500/30 transition-colors"
+                style={{
+                  backgroundColor: 'rgba(31, 41, 55, 0.5)',
+                  borderRadius: '0.5rem',
+                  padding: '1.25rem',
+                  border: '1px solid rgba(55, 65, 81, 0.5)',
+                }}
               >
                 <div className="w-10 h-10 rounded-lg bg-green-500/20 flex items-center justify-center text-green-400 mb-3">
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
@@ -187,9 +211,17 @@ export default function Home() {
               
               {/* Feature 4 */}
               <motion.div
-                whileHover={{ scale: 1.02 }}
+                whileHover={{ 
+                  scale: 1.02,
+                  borderColor: 'rgba(34, 197, 94, 0.3)'
+                }}
                 transition={{ type: "spring", stiffness: 400, damping: 10 }}
-                className="bg-gray-800/50 rounded-lg p-5 border border-gray-700/50 hover:border-green-500/30 transition-colors"
+                style={{
+                  backgroundColor: 'rgba(31, 41, 55, 0.5)',
+                  borderRadius: '0.5rem',
+                  padding: '1.25rem',
+                  border: '1px solid rgba(55, 65, 81, 0.5)',
+                }}
               >
                 <div className="w-10 h-10 rounded-lg bg-green-500/20 flex items-center justify-center text-green-400 mb-3">
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
