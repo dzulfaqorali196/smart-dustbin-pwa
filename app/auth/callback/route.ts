@@ -18,6 +18,13 @@ export async function GET(request: NextRequest) {
     
     // Exchange code with session
     await supabase.auth.exchangeCodeForSession(code);
+    
+    // Tambahkan parameter success=true untuk memberi tahu client bahwa login berhasil
+    const redirectUrl = new URL('/', request.url);
+    redirectUrl.searchParams.set('auth_success', 'true');
+    redirectUrl.searchParams.set('provider', requestUrl.searchParams.get('provider') || 'oauth');
+    
+    return NextResponse.redirect(redirectUrl);
   }
 
   // Redirect ke halaman utama setelah login berhasil
