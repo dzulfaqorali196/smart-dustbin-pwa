@@ -16,13 +16,13 @@ export const viewport: Viewport = {
   maximumScale: 5,
   userScalable: true,
   viewportFit: "cover",
+  themeColor: "#4CAF50",
 };
 
 export const metadata: Metadata = {
   title: "Smart Dustbin - PWA",
   description: "Real-time monitoring system for smart waste management",
   manifest: "/manifest.json",
-  themeColor: "#4CAF50",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",

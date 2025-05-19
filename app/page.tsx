@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, Suspense } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
@@ -10,7 +10,8 @@ import { toast } from "sonner"
 import { useSearchParams } from "next/navigation"
 import { useAuthStore } from "@/store/auth-store"
 
-export default function Home() {
+// Komponen terpisah untuk bagian yang menggunakan useSearchParams
+function PageContent() {
   const [mounted, setMounted] = useState(false)
   const searchParams = useSearchParams()
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -334,5 +335,14 @@ export default function Home() {
         </div>
       </div>
     </main>
+  )
+}
+
+// Komponen utama dengan Suspense
+export default function Home() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <PageContent />
+    </Suspense>
   )
 }
