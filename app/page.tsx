@@ -1,14 +1,14 @@
 "use client"
 
-import { useState, useEffect, Suspense } from "react"
-import Link from "next/link"
-import Image from "next/image"
-import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { motion } from "framer-motion"
-import { toast } from "sonner"
-import { useSearchParams } from "next/navigation"
+import { Button } from "@/components/ui/button"
 import { useAuthStore } from "@/store/auth-store"
+import { motion } from "framer-motion"
+import Image from "next/image"
+import Link from "next/link"
+import { useSearchParams } from "next/navigation"
+import { Suspense, useEffect, useState } from "react"
+import { toast } from "sonner"
 
 // Komponen terpisah untuk bagian yang menggunakan useSearchParams
 function PageContent() {
@@ -43,7 +43,7 @@ function PageContent() {
   if (!mounted) return null
 
   return (
-    <main className="flex min-h-screen flex-col bg-[url('/img/grid-pattern.svg')] bg-green-500 text-white">
+    <main className="flex min-h-screen flex-col bg-green-500 text-white">
       <div className="grid grid-cols-1 lg:grid-cols-2 min-h-screen">
         {/* Left side - Green section with logo */}
         <div className="relative bg-green-500 flex flex-col items-center justify-center p-8 text-center">
@@ -95,7 +95,7 @@ function PageContent() {
           </motion.div>
           
           {/* Stats section */}
-          <div className="w-full max-w-md mt-auto">
+          <div className="w-full max-w-md">
             <div className="grid grid-cols-2 gap-4 mt-6">
               <div className="bg-green-600/30 backdrop-blur-sm rounded-lg p-4 text-center">
                 <div className="text-4xl font-bold">98%</div>

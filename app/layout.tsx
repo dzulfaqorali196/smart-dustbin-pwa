@@ -1,12 +1,14 @@
+import { ThemeProvider } from "@/components/theme-provider";
+import { Toaster } from "@/components/ui/sonner";
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import { ThemeProvider } from "@/components/theme-provider";
-import { Toaster } from "@/components/ui/sonner";
 
+// Definisi font dengan property 'variable'
 const inter = Inter({
   subsets: ["latin"],
   display: "swap",
+  variable: '--font-inter',  // ✅ Gunakan variable
 });
 
 export const viewport: Viewport = {
@@ -43,14 +45,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning className={inter.variable}>
       <head>
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-touch-fullscreen" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
       </head>
-      <body className={`${inter.className} antialiased overflow-x-hidden`}>
+      <body className="font-sans antialiased overflow-x-hidden">
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
