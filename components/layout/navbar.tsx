@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { LogOut } from "lucide-react";
+import { LogOut, User } from "lucide-react";
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -70,18 +70,24 @@ export default function Navbar() {
             <div className="ml-10 flex items-center space-x-4">
               {user ? (
                 <>
-                  <Link href="/" className="px-3 py-2 rounded-md text-sm font-medium text-white hover:bg-green-700 transition-colors">
+                  <Link href="/" className="px-3 py-2 rounded-md text-sm font-medium text-white hover:bg-green-700 hover:shadow-md transition-all duration-200">
                     Dashboard
                   </Link>
-                  <Link href="/map" className="px-3 py-2 rounded-md text-sm font-medium text-white hover:bg-green-700 transition-colors">
+                  <Link href="/map" className="px-3 py-2 rounded-md text-sm font-medium text-white hover:bg-green-700 hover:shadow-md transition-all duration-200">
                     Peta
+                  </Link>
+                  
+                  {/* Profil Link */}
+                  <Link href="/profile" className="px-3 py-2 rounded-md text-sm font-medium text-white hover:bg-green-700 hover:shadow-md transition-all duration-200 flex items-center gap-2">
+                    <User className="w-4 h-4" />
+                    Profil
                   </Link>
                   
                   {/* Sign Out Button */}
                   <Button 
                     variant="ghost" 
                     onClick={handleSignOut} 
-                    className="flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium text-white hover:bg-green-700 transition-colors"
+                    className="flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium text-white hover:bg-green-800 hover:shadow-md transition-all duration-200"
                   >
                     <LogOut className="w-4 h-4" />
                     Keluar
@@ -90,7 +96,7 @@ export default function Navbar() {
                   {/* User Dropdown */}
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" className="relative h-9 w-9 rounded-full bg-green-700/50 p-0 hover:bg-green-700/80">
+                      <Button variant="ghost" className="relative h-9 w-9 rounded-full bg-green-700/50 p-0 hover:bg-green-700/80 hover:shadow-md transition-all duration-200">
                         <Avatar className="h-9 w-9">
                           <AvatarImage src={user.user_metadata?.avatar_url} />
                           <AvatarFallback className="bg-green-800 text-white">{getUserInitials()}</AvatarFallback>
@@ -104,13 +110,13 @@ export default function Navbar() {
                       </div>
                       <DropdownMenuSeparator />
                       <DropdownMenuItem asChild>
-                        <Link href="/profile">Profil</Link>
+                        <Link href="/profile" className="hover:bg-green-50 transition-colors duration-200">Profil</Link>
                       </DropdownMenuItem>
                       <DropdownMenuItem asChild>
-                        <Link href="/settings">Pengaturan</Link>
+                        <Link href="/settings" className="hover:bg-green-50 transition-colors duration-200">Pengaturan</Link>
                       </DropdownMenuItem>
                       <DropdownMenuSeparator />
-                      <DropdownMenuItem onClick={handleSignOut} className="text-red-500 focus:text-red-500 cursor-pointer">
+                      <DropdownMenuItem onClick={handleSignOut} className="text-red-500 focus:text-red-500 cursor-pointer hover:bg-red-50 transition-colors duration-200">
                         Keluar
                       </DropdownMenuItem>
                     </DropdownMenuContent>
@@ -118,12 +124,12 @@ export default function Navbar() {
                 </>
               ) : (
                 <>
-                  <Link href="/signin" className="px-3 py-2 rounded-md text-sm font-medium text-white hover:bg-green-700 transition-colors">
+                  <Link href="/signin" className="px-3 py-2 rounded-md text-sm font-medium text-white hover:bg-green-700 hover:shadow-md transition-all duration-200">
                     Masuk
                   </Link>
                   <Link 
                     href="/signup"
-                    className="px-3 py-2 rounded-md text-sm font-medium text-white bg-green-800 hover:bg-green-900 transition-colors"
+                    className="px-3 py-2 rounded-md text-sm font-medium text-white bg-green-800 hover:bg-green-900 hover:shadow-md transition-all duration-200"
                   >
                     Daftar
                   </Link>
@@ -135,11 +141,19 @@ export default function Navbar() {
           <div className="md:hidden flex items-center gap-2">
             {user && (
               <>
+                {/* Mobile Profile Link */}
+                <Link 
+                  href="/profile" 
+                  className="p-2 rounded-md text-white hover:bg-green-700 hover:shadow-md transition-all duration-200"
+                >
+                  <User className="w-5 h-5" />
+                </Link>
+                
                 {/* Mobile Sign Out Button */}
                 <Button 
                   variant="ghost" 
                   onClick={handleSignOut} 
-                  className="p-2 rounded-md text-white hover:bg-green-700"
+                  className="p-2 rounded-md text-white hover:bg-green-700 hover:shadow-md transition-all duration-200"
                   size="icon"
                 >
                   <LogOut className="w-5 h-5" />
@@ -147,7 +161,7 @@ export default function Navbar() {
                 
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" className="relative h-8 w-8 rounded-full bg-green-700/50 p-0 hover:bg-green-700/80 mr-2">
+                    <Button variant="ghost" className="relative h-8 w-8 rounded-full bg-green-700/50 p-0 hover:bg-green-700/80 hover:shadow-md transition-all duration-200 mr-2">
                       <Avatar className="h-8 w-8">
                         <AvatarImage src={user.user_metadata?.avatar_url} />
                         <AvatarFallback className="bg-green-800 text-white text-xs">{getUserInitials()}</AvatarFallback>
@@ -161,16 +175,16 @@ export default function Navbar() {
                     </div>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem asChild>
-                      <Link href="/">Dashboard</Link>
+                      <Link href="/" className="hover:bg-green-50 transition-colors duration-200">Dashboard</Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
-                      <Link href="/map">Peta</Link>
+                      <Link href="/map" className="hover:bg-green-50 transition-colors duration-200">Peta</Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
-                      <Link href="/profile">Profil</Link>
+                      <Link href="/profile" className="hover:bg-green-50 transition-colors duration-200">Profil</Link>
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem onClick={handleSignOut} className="text-red-500 focus:text-red-500 cursor-pointer">
+                    <DropdownMenuItem onClick={handleSignOut} className="text-red-500 focus:text-red-500 cursor-pointer hover:bg-red-50 transition-colors duration-200">
                       Keluar
                     </DropdownMenuItem>
                   </DropdownMenuContent>
@@ -180,7 +194,7 @@ export default function Navbar() {
             
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="inline-flex items-center justify-center p-2 rounded-md text-white hover:bg-green-700 focus:outline-none transition-colors"
+              className="inline-flex items-center justify-center p-2 rounded-md text-white hover:bg-green-700 hover:shadow-md focus:outline-none transition-all duration-200"
             >
               <span className="sr-only">Buka menu utama</span>
               <svg
@@ -225,14 +239,14 @@ export default function Navbar() {
             <>
               <Link
                 href="/signin"
-                className="block px-3 py-2 rounded-md text-base font-medium text-white hover:bg-green-700 transition-colors"
+                className="block px-3 py-2 rounded-md text-base font-medium text-white hover:bg-green-600 hover:shadow-md transition-all duration-200"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Masuk
               </Link>
               <Link
                 href="/signup"
-                className="block px-3 py-2 rounded-md text-base font-medium text-white bg-green-800 hover:bg-green-900 transition-colors"
+                className="block px-3 py-2 rounded-md text-base font-medium text-white bg-green-800 hover:bg-green-900 hover:shadow-md transition-all duration-200"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Daftar
@@ -245,21 +259,21 @@ export default function Navbar() {
               </div>
               <Link
                 href="/"
-                className="block px-3 py-2 rounded-md text-base font-medium text-white hover:bg-green-700 transition-colors"
+                className="block px-3 py-2 rounded-md text-base font-medium text-white hover:bg-green-600 hover:shadow-md transition-all duration-200"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Dashboard
               </Link>
               <Link
                 href="/map"
-                className="block px-3 py-2 rounded-md text-base font-medium text-white hover:bg-green-700 transition-colors"
+                className="block px-3 py-2 rounded-md text-base font-medium text-white hover:bg-green-600 hover:shadow-md transition-all duration-200"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Peta
               </Link>
               <Link
                 href="/profile"
-                className="block px-3 py-2 rounded-md text-base font-medium text-white hover:bg-green-700 transition-colors"
+                className="block px-3 py-2 rounded-md text-base font-medium text-white hover:bg-green-600 hover:shadow-md transition-all duration-200"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Profil
@@ -269,7 +283,7 @@ export default function Navbar() {
                   handleSignOut();
                   setIsMenuOpen(false);
                 }}
-                className="w-full text-left px-3 py-2 rounded-md text-base font-medium text-red-300 hover:bg-green-700 hover:text-red-100 transition-colors"
+                className="w-full text-left px-3 py-2 rounded-md text-base font-medium text-red-300 hover:bg-green-600 hover:text-red-100 hover:shadow-md transition-all duration-200"
               >
                 Keluar
               </button>
