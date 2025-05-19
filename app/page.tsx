@@ -5,7 +5,7 @@ import Link from "next/link"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { motion, HTMLMotionProps } from "framer-motion"
+import { motion } from "framer-motion"
 import { toast } from "sonner"
 import { useSearchParams } from "next/navigation"
 import { useAuthStore } from "@/store/auth-store"
@@ -13,6 +13,7 @@ import { useAuthStore } from "@/store/auth-store"
 export default function Home() {
   const [mounted, setMounted] = useState(false)
   const searchParams = useSearchParams()
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { user } = useAuthStore()
 
   useEffect(() => {
