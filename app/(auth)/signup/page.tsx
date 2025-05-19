@@ -1,18 +1,18 @@
 'use client';
 
-import { useState } from 'react';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { useAuthStore } from '@/store/auth-store';
-import { z } from 'zod';
-import Image from 'next/image';
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Separator } from "@/components/ui/separator";
+import { useAuthStore } from '@/store/auth-store';
+import Image from 'next/image';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
+import { z } from 'zod';
 
 const signupSchema = z.object({
   name: z.string().min(2, 'Nama minimal 2 karakter'),
@@ -331,9 +331,13 @@ export default function SignUp() {
       <div className="md:flex hidden md:w-1/2 items-center justify-center p-8 relative order-1 md:order-2">
         <div className="max-w-md">
           <div className="mb-8 w-36 h-36 mx-auto relative bg-white/20 rounded-2xl p-1.5 shadow-2xl transform hover:rotate-6 transition-all duration-300 hover:shadow-green-500/30">
-            <div className="w-full h-full rounded-xl bg-gradient-to-br from-green-400 to-teal-500 flex items-center justify-center shadow-inner">
-              <span className="text-white text-5xl font-bold drop-shadow-md">SB</span>
-            </div>
+            <Link href="/">
+              <div className="w-full h-full rounded-xl bg-gradient-to-br from-green-400 to-teal-500 flex items-center justify-center shadow-inner">
+                <span className="text-white text-5xl font-bold drop-shadow-md">
+                    SB
+                </span>
+              </div>
+            </Link>
             
             {/* 3D effect for logo */}
             <div className="absolute -bottom-3 -right-3 w-full h-full rounded-xl bg-teal-700/40 blur-sm -z-10"></div>

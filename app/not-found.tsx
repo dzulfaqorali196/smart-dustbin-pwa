@@ -1,6 +1,6 @@
-import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import type { Metadata, Viewport } from "next";
+import Link from "next/link";
 
 export const viewport: Viewport = {
   themeColor: "#4CAF50",
@@ -21,7 +21,7 @@ export default function NotFound() {
           Maaf, halaman yang Anda cari tidak dapat ditemukan atau telah dipindahkan.
         </p>
         <Button asChild className="bg-green-500 hover:bg-green-600">
-          <Link href="/">Kembali ke Beranda</Link>
+          <Link href="/dashboard">Kembali ke Beranda</Link>
         </Button>
       </div>
     </div>

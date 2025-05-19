@@ -9,18 +9,14 @@ export default function AppPage() {
   const router = useRouter();
 
   useEffect(() => {
-    if (!isLoading) {
+    if (!isLoading && typeof user !== 'undefined') {
       if (user) {
         router.replace('/dashboard');
       } else {
-        router.replace('/');
+        router.replace('/landing');
       }
     }
   }, [user, isLoading, router]);
 
-  return (
-    <div className="flex items-center justify-center min-h-screen">
-      <div className="animate-spin h-10 w-10 border-4 border-green-500 rounded-full border-t-transparent"></div>
-    </div>
-  );
+  return null;
 }
