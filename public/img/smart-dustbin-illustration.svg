@@ -1,0 +1,120 @@
+<svg width="600" height="600" viewBox="0 0 600 600" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <circle cx="300" cy="300" r="280" fill="#E8F5E9" opacity="0.8" />
+  
+  <!-- Ground -->
+  <ellipse cx="300" cy="520" rx="220" ry="30" fill="#81C784" opacity="0.4" />
+  
+  <!-- Smart Dustbin -->
+  <g filter="url(#shadow)">
+    <!-- Base of the bin -->
+    <rect x="190" y="220" width="220" height="280" rx="20" fill="#4CAF50" />
+    
+    <!-- Lid of the bin -->
+    <path d="M170 220C170 204.536 182.536 192 198 192H402C417.464 192 430 204.536 430 220V240H170V220Z" fill="#388E3C" />
+    
+    <!-- Screen / display -->
+    <rect x="220" y="260" width="160" height="100" rx="8" fill="#FFFFFF" />
+    
+    <!-- Sensor -->
+    <circle cx="300" cy="200" r="15" fill="#FFCA28" />
+    <circle cx="300" cy="200" r="8" fill="#FFC107" />
+    
+    <!-- Buttons and indicators -->
+    <rect x="230" y="380" width="140" height="20" rx="8" fill="#E8F5E9" />
+    <rect x="230" y="410" width="140" height="20" rx="8" fill="#E8F5E9" />
+    <rect x="230" y="440" width="140" height="20" rx="8" fill="#E8F5E9" />
+    
+    <!-- UI on screen -->
+    <rect x="230" y="270" width="140" height="8" rx="4" fill="#E0E0E0" />
+    <rect x="230" y="290" width="80" height="8" rx="4" fill="#E0E0E0" />
+    <rect x="320" y="290" width="50" height="8" rx="4" fill="#E0E0E0" />
+    <rect x="230" y="310" width="140" height="8" rx="4" fill="#E0E0E0" />
+    <rect x="230" y="330" width="140" height="8" rx="4" fill="#E0E0E0" />
+    <rect x="230" y="350" width="60" height="8" rx="4" fill="#E0E0E0" />
+    
+    <!-- IoT signal indicator -->
+    <path d="M400 280 C410 270, 420 260, 430 250" stroke="#4CAF50" stroke-width="4" stroke-linecap="round" />
+    <path d="M400 290 C413 277, 426 264, 439 251" stroke="#4CAF50" stroke-width="3" stroke-linecap="round" />
+    <path d="M400 300 C415 285, 430 270, 445 255" stroke="#4CAF50" stroke-width="2" stroke-linecap="round" />
+  </g>
+  
+  <!-- Recyclable items -->
+  <g filter="url(#shadow2)">
+    <!-- Paper -->
+    <rect x="130" y="420" width="40" height="50" transform="rotate(-15 130 420)" fill="#90CAF9" />
+    <rect x="135" y="430" width="30" height="5" transform="rotate(-15 135 430)" fill="#64B5F6" />
+    <rect x="140" y="440" width="20" height="5" transform="rotate(-15 140 440)" fill="#64B5F6" />
+    
+    <!-- Bottle -->
+    <path d="M460 440L480 440L485 470L475 490L465 470L460 440Z" fill="#B3E5FC" opacity="0.9" />
+    <rect x="467" y="430" width="6" height="10" fill="#81D4FA" />
+    
+    <!-- Can -->
+    <ellipse cx="450" cy="480" rx="15" ry="5" fill="#B0BEC5" />
+    <rect x="435" y="450" width="30" height="30" fill="#CFD8DC" />
+    <ellipse cx="450" cy="450" rx="15" ry="5" fill="#B0BEC5" />
+  </g>
+  
+  <!-- Eco-friendly icons -->
+  <g>
+    <!-- Recycle icon -->
+    <path d="M120 180L150 150L180 180L160 180L150 160L140 180L120 180Z" fill="#4CAF50" />
+    <path d="M150 130C172.091 130 190 147.909 190 170C190 192.091 172.091 210 150 210C127.909 210 110 192.091 110 170C110 147.909 127.909 130 150 130Z" stroke="#4CAF50" stroke-width="4" fill="none" />
+    
+    <!-- Leaves -->
+    <path d="M450 160C430 140 460 110 480 130C500 150 470 180 450 160Z" fill="#81C784" />
+    <path d="M465 155C460 150 475 135 485 145C495 155 475 170 465 155Z" fill="#66BB6A" />
+    
+    <!-- Earth icon -->
+    <circle cx="500" cy="100" r="40" fill="#64B5F6" />
+    <path d="M480 80C490 90 500 70 520 80C540 90 530 120 510 110C490 100 480 120 460 110C440 100 470 70 480 80Z" fill="#4CAF50" />
+  </g>
+  
+  <!-- Animated elements -->
+  <g class="animate-float">
+    <!-- WiFi signals / IoT connection -->
+    <path d="M100 250 C110 240, 120 230, 130 220" stroke="#90CAF9" stroke-width="3" stroke-linecap="round" opacity="0.6">
+      <animate attributeName="opacity" values="0.2;0.8;0.2" dur="4s" repeatCount="indefinite" />
+    </path>
+    <path d="M100 270 C115 255, 130 240, 145 225" stroke="#90CAF9" stroke-width="2" stroke-linecap="round" opacity="0.7">
+      <animate attributeName="opacity" values="0.3;0.9;0.3" dur="3s" repeatCount="indefinite" />
+    </path>
+    <path d="M100 290 C120 270, 140 250, 160 230" stroke="#90CAF9" stroke-width="1" stroke-linecap="round" opacity="0.8">
+      <animate attributeName="opacity" values="0.4;1;0.4" dur="2s" repeatCount="indefinite" />
+    </path>
+  </g>
+  
+  <style>
+    .animate-float {
+      animation: floating 3s ease-in-out infinite;
+    }
+    @keyframes floating {
+      0% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
+      100% { transform: translateY(0px); }
+    }
+  </style>
+  
+  <!-- Filters -->
+  <defs>
+    <filter id="shadow" x="160" y="182" width="280" height="338" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+      <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"/>
+      <feOffset dy="10"/>
+      <feGaussianBlur stdDeviation="5"/>
+      <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.25 0"/>
+      <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow"/>
+      <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow" result="shape"/>
+    </filter>
+    <filter id="shadow2" x="120" y="410" width="375" height="90" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+      <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"/>
+      <feOffset dy="4"/>
+      <feGaussianBlur stdDeviation="2"/>
+      <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.25 0"/>
+      <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow"/>
+      <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow" result="shape"/>
+    </filter>
+  </defs>
+</svg> 

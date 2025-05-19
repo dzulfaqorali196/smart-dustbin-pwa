@@ -62,8 +62,14 @@ export default function AuthGuard({
   // Menampilkan loading saat memeriksa auth
   if (isChecking || isLoading) {
     return (
-      <div className="flex h-screen items-center justify-center">
-        <div className="w-10 h-10 border-4 border-green-500 border-t-transparent rounded-full animate-spin"></div>
+      <div className="fixed inset-0 flex flex-col items-center justify-center bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm z-50">
+        <div className="relative">
+          <div className="w-16 h-16 border-4 border-green-500 border-t-transparent rounded-full animate-spin"></div>
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="w-8 h-8 border-4 border-green-300 border-t-transparent rounded-full animate-spin" style={{ animationDirection: 'reverse', animationDuration: '0.6s' }}></div>
+          </div>
+        </div>
+        <p className="mt-4 text-gray-600 dark:text-gray-300 animate-pulse">Memeriksa otentikasi...</p>
       </div>
     );
   }

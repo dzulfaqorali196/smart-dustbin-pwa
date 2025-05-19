@@ -45,4 +45,86 @@ h3 {
   h3 {
     font-size: 1.25rem;
   }
+}
+
+/* Animasi untuk ilustrasi dan elemen-elemen UI */
+@keyframes float {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+.animate-float {
+  animation: float 5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+.animate-pulse-slow {
+  animation: pulse 3s ease-in-out infinite;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.6s ease-out forwards;
+}
+
+@keyframes scaleIn {
+  from {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.animate-scaleIn {
+  animation: scaleIn 0.5s ease-out forwards;
+}
+
+/* Transisi halus untuk semua elemen interaktif */
+button, a, input, select, textarea {
+  transition: all 0.2s ease;
+}
+
+/* Efek hover yang lebih halus untuk tombol */
+.hover-lift {
+  transition: transform 0.2s ease;
+}
+
+.hover-lift:hover {
+  transform: translateY(-2px);
+}
+
+.shadow-glow {
+  box-shadow: 0 0 20px rgba(76, 175, 80, 0.2);
+}
+
+.shadow-glow:hover {
+  box-shadow: 0 0 25px rgba(76, 175, 80, 0.3);
 } 

@@ -13,6 +13,10 @@ interface AuthState {
   signOut: () => Promise<void>;
   resetPassword: (email: string) => Promise<void>;
   
+  // Social auth
+  signInWithGoogle: () => Promise<void>;
+  signInWithGithub: () => Promise<void>;
+  
   // Profile update
   updateProfile: (profile: { name?: string; avatar_url?: string }) => Promise<void>;
   
@@ -68,6 +72,48 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     } catch (error: any) {
       console.error('Sign up error:', error);
       set({ error: error.message || 'Failed to sign up', isLoading: false });
+    }
+  },
+
+  signInWithGoogle: async () => {
+    set({ isLoading: true, error: null });
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: typeof window !== 'undefined' 
+            ? `${window.location.origin}/auth/callback` 
+            : undefined
+        }
+      });
+      
+      if (error) throw error;
+      // Redirect akan ditangani oleh Supabase, tidak perlu set user
+      
+    } catch (error: any) {
+      console.error('Google sign in error:', error);
+      set({ error: error.message || 'Failed to sign in with Google', isLoading: false });
+    }
+  },
+
+  signInWithGithub: async () => {
+    set({ isLoading: true, error: null });
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'github',
+        options: {
+          redirectTo: typeof window !== 'undefined' 
+            ? `${window.location.origin}/auth/callback` 
+            : undefined
+        }
+      });
+      
+      if (error) throw error;
+      // Redirect akan ditangani oleh Supabase, tidak perlu set user
+      
+    } catch (error: any) {
+      console.error('GitHub sign in error:', error);
+      set({ error: error.message || 'Failed to sign in with GitHub', isLoading: false });
     }
   },
 

@@ -1,24 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
-  <!-- Background Circle -->
-  <circle cx="256" cy="256" r="248" fill="#ffffff" stroke="#4CAF50" stroke-width="16"/>
-  
-  <!-- Dustbin Body -->
-  <path d="M160 180 L180 400 H332 L352 180 Z" fill="#4CAF50" />
-  
-  <!-- Dustbin Lid -->
-  <path d="M140 180 L372 180 L372 160 C372 150 362 140 352 140 H160 C150 140 140 150 140 160 Z" fill="#388E3C" />
-  
-  <!-- Smart Elements: Wireless Signal -->
-  <path d="M232 240 A70 70 0 0 1 280 240" fill="none" stroke="#ffffff" stroke-width="10" stroke-linecap="round" />
-  <path d="M242 260 A40 40 0 0 1 270 260" fill="none" stroke="#ffffff" stroke-width="10" stroke-linecap="round" />
-  <circle cx="256" cy="290" r="12" fill="#ffffff" />
-  
-  <!-- Recycle Symbol -->
-  <g transform="translate(256, 340) scale(0.8)" fill="#ffffff">
-    <path d="M0 -30 L-10 -10 L10 -10 Z" />
-    <path d="M26 15 L16 -5 L6 15 Z" transform="rotate(120)" />
-    <path d="M-26 15 L-16 -5 L-6 15 Z" transform="rotate(240)" />
-    <path d="M0 0 L0 -22 L-20 10 L20 10 Z" fill="none" stroke="#ffffff" stroke-width="5" stroke-linejoin="round" />
-  </g>
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="512" height="512" rx="128" fill="url(#paint0_linear)" />
+  <path d="M156 256C156 201.3 200.3 157 255 157C309.7 157 354 201.3 354 256C354 310.7 309.7 355 255 355C200.3 355 156 310.7 156 256Z" fill="white" fillOpacity="0.9"/>
+  <path d="M231.144 261.536H210.192L256.752 195.856H277.704L231.144 261.536ZM235.248 307H212.976V274.656H235.248V307ZM254.784 307L298.896 244.752L288.336 229.12L232.416 307H254.784Z" fill="#18A558" />
+  <defs>
+    <linearGradient id="paint0_linear" x1="0" y1="0" x2="512" y2="512" gradientUnits="userSpaceOnUse">
+      <stop stopColor="#4CAF50" />
+      <stop offset="1" stopColor="#2E7D32" />
+    </linearGradient>
+  </defs>
 </svg>
