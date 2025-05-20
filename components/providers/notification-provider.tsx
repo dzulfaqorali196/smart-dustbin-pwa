@@ -11,6 +11,18 @@ import {
 } from '@/lib/notifications';
 import { toast } from 'sonner';
 
+// Menambahkan type declaration untuk mengatasi properti yang tidak ada di TypeScript
+interface NotificationWithPermissionChange extends Notification {
+  onpermissionchange: ((this: Notification, ev: Event) => any) | null;
+}
+
+type NotificationConstructorWithPermissionChange = {
+  readonly permission: NotificationPermission;
+  onpermissionchange: ((this: Notification, ev: Event) => any) | null;
+  new(title: string, options?: NotificationOptions): Notification;
+  requestPermission(): Promise<NotificationPermission>;
+};
+
 type NotificationContextType = {
   isSupported: boolean;
   permission: NotificationPermission | 'unsupported';
@@ -41,12 +53,12 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
           setPermission(Notification.permission);
         };
         
-        // @ts-expect-error - Property onpermissionchange exists in browsers but is not defined in TypeScript interface
-        Notification.onpermissionchange = handlePermissionChange;
+        // Menggunakan type assertion untuk mengatasi type error
+        const NotificationWithChange = Notification as unknown as NotificationConstructorWithPermissionChange;
+        NotificationWithChange.onpermissionchange = handlePermissionChange;
         
         return () => {
-          // @ts-expect-error - Property onpermissionchange exists in browsers but is not defined in TypeScript interface
-          Notification.onpermissionchange = null;
+          NotificationWithChange.onpermissionchange = null;
         };
       }
     } else {
