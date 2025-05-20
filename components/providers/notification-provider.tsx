@@ -12,13 +12,9 @@ import {
 import { toast } from 'sonner';
 
 // Menambahkan type declaration untuk mengatasi properti yang tidak ada di TypeScript
-interface NotificationWithPermissionChange extends Notification {
-  onpermissionchange: ((this: Notification, ev: Event) => any) | null;
-}
-
 type NotificationConstructorWithPermissionChange = {
   readonly permission: NotificationPermission;
-  onpermissionchange: ((this: Notification, ev: Event) => any) | null;
+  onpermissionchange: ((this: Notification, ev: Event) => unknown) | null;
   new(title: string, options?: NotificationOptions): Notification;
   requestPermission(): Promise<NotificationPermission>;
 };
