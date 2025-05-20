@@ -70,9 +70,9 @@ export default function BinDetailPage() {
           setIsUserOwner(user.id === data.user_id);
         }
       }
-    } catch (error: any) {
+    } catch (error: Error | unknown) {
       console.error('Error fetching bin details:', error);
-      setError(error.message || 'Terjadi kesalahan saat mengambil data tempat sampah');
+      setError(error instanceof Error ? error.message : 'Terjadi kesalahan saat mengambil data tempat sampah');
     } finally {
       setIsLoading(false);
     }
@@ -98,7 +98,7 @@ export default function BinDetailPage() {
     return () => {
       subscription.unsubscribe();
     };
-  }, [id, user]);
+  }, [id, user, fetchBin]);
 
   // Fungsi untuk menghapus tempat sampah
   const handleDelete = async () => {
@@ -117,9 +117,9 @@ export default function BinDetailPage() {
       }
       
       router.push('/map');
-    } catch (error: any) {
+    } catch (error: Error | unknown) {
       console.error('Error deleting bin:', error);
-      setError(error.message || 'Terjadi kesalahan saat menghapus tempat sampah');
+      setError(error instanceof Error ? error.message : 'Terjadi kesalahan saat menghapus tempat sampah');
     }
   };
 

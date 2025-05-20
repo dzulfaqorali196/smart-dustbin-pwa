@@ -9,7 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { ChevronLeft, MapPin, Plus } from 'lucide-react';
+import { ChevronLeft, Plus } from 'lucide-react';
 import { supabase } from '@/lib/supabase/client';
 import { toast } from 'sonner';
 import { useAuthStore } from '@/store/auth-store';
@@ -58,9 +58,8 @@ export default function AddBinPage() {
     try {
       setIsSubmitting(true);
       
-      // Tambahkan tempat sampah ke database tanpa menyertakan ID
-      // Biarkan Supabase yang menghasilkan UUID
-      const { data, error } = await supabase
+      // Tambahkan tempat sampah ke database
+      const { error } = await supabase
         .from('bins')
         .insert({
           name: values.name,
@@ -70,8 +69,7 @@ export default function AddBinPage() {
           max_capacity: values.max_capacity,
           user_id: user?.id,
           current_capacity: 0
-        })
-        .select();
+        });
       
       if (error) {
         throw error;
@@ -79,9 +77,9 @@ export default function AddBinPage() {
       
       toast.success('Tempat sampah berhasil ditambahkan');
       router.push('/map');
-    } catch (error: any) {
+    } catch (error: Error | unknown) {
       console.error('Error adding bin:', error);
-      toast.error('Gagal menambahkan tempat sampah: ' + error.message);
+      toast.error('Gagal menambahkan tempat sampah: ' + (error instanceof Error ? error.message : 'Terjadi kesalahan'));
     } finally {
       setIsSubmitting(false);
     }
