@@ -4,13 +4,6 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useAuthStore } from '@/store/auth-store';
 import { useRouter } from 'next/navigation';
-import { 
-  DropdownMenu, 
-  DropdownMenuContent, 
-  DropdownMenuItem, 
-  DropdownMenuSeparator, 
-  DropdownMenuTrigger 
-} from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { LogOut, User } from "lucide-react";
@@ -70,7 +63,7 @@ export default function Navbar() {
             <div className="ml-10 flex items-center space-x-4">
               {user ? (
                 <>
-                  <Link href="/" className="px-3 py-2 rounded-md text-sm font-medium text-white hover:bg-green-700 hover:shadow-md transition-all duration-200">
+                  <Link href="/dashboard" className="px-3 py-2 rounded-md text-sm font-medium text-white hover:bg-green-700 hover:shadow-md transition-all duration-200">
                     Dashboard
                   </Link>
                   <Link href="/map" className="px-3 py-2 rounded-md text-sm font-medium text-white hover:bg-green-700 hover:shadow-md transition-all duration-200">
@@ -93,34 +86,13 @@ export default function Navbar() {
                     Keluar
                   </Button>
                   
-                  {/* User Dropdown */}
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" className="relative h-9 w-9 rounded-full bg-green-700/50 p-0 hover:bg-green-700/80 hover:shadow-md transition-all duration-200">
-                        <Avatar className="h-9 w-9">
-                          <AvatarImage src={user.user_metadata?.avatar_url} />
-                          <AvatarFallback className="bg-green-800 text-white">{getUserInitials()}</AvatarFallback>
-                        </Avatar>
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="w-56 mt-1">
-                      <div className="flex flex-col space-y-1 p-2">
-                        <p className="text-sm font-medium">{user.user_metadata?.name || user.email}</p>
-                        <p className="text-xs text-muted-foreground">{user.email}</p>
-                      </div>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem asChild>
-                        <Link href="/profile" className="hover:bg-green-50 transition-colors duration-200">Profil</Link>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem asChild>
-                        <Link href="/settings" className="hover:bg-green-50 transition-colors duration-200">Pengaturan</Link>
-                      </DropdownMenuItem>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem onClick={handleSignOut} className="text-red-500 focus:text-red-500 cursor-pointer hover:bg-red-50 transition-colors duration-200">
-                        Keluar
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
+                  {/* User Avatar - direct link to profile */}
+                  <Link href="/profile">
+                    <Avatar className="h-9 w-9 cursor-pointer hover:ring-2 hover:ring-white transition-all">
+                      <AvatarImage src={user.user_metadata?.avatar_url} />
+                      <AvatarFallback className="bg-green-800 text-white">{getUserInitials()}</AvatarFallback>
+                    </Avatar>
+                  </Link>
                 </>
               ) : (
                 <>
@@ -159,36 +131,13 @@ export default function Navbar() {
                   <LogOut className="w-5 h-5" />
                 </Button>
                 
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" className="relative h-8 w-8 rounded-full bg-green-700/50 p-0 hover:bg-green-700/80 hover:shadow-md transition-all duration-200 mr-2">
-                      <Avatar className="h-8 w-8">
-                        <AvatarImage src={user.user_metadata?.avatar_url} />
-                        <AvatarFallback className="bg-green-800 text-white text-xs">{getUserInitials()}</AvatarFallback>
-                      </Avatar>
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-56 mt-1">
-                    <div className="flex flex-col space-y-1 p-2">
-                      <p className="text-sm font-medium">{user.user_metadata?.name || user.email}</p>
-                      <p className="text-xs text-muted-foreground">{user.email}</p>
-                    </div>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem asChild>
-                      <Link href="/" className="hover:bg-green-50 transition-colors duration-200">Dashboard</Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
-                      <Link href="/map" className="hover:bg-green-50 transition-colors duration-200">Peta</Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
-                      <Link href="/profile" className="hover:bg-green-50 transition-colors duration-200">Profil</Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem onClick={handleSignOut} className="text-red-500 focus:text-red-500 cursor-pointer hover:bg-red-50 transition-colors duration-200">
-                      Keluar
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
+                {/* Mobile Avatar - direct link to profile */}
+                <Link href="/profile">
+                  <Avatar className="h-8 w-8 hover:ring-2 hover:ring-white transition-all">
+                    <AvatarImage src={user.user_metadata?.avatar_url} />
+                    <AvatarFallback className="bg-green-800 text-white text-xs">{getUserInitials()}</AvatarFallback>
+                  </Avatar>
+                </Link>
               </>
             )}
             
@@ -254,11 +203,8 @@ export default function Navbar() {
             </>
           ) : (
             <>
-              <div className="px-3 py-2 text-sm font-medium text-green-200">
-                Login sebagai: {user.user_metadata?.name || user.email}
-              </div>
               <Link
-                href="/"
+                href="/dashboard"
                 className="block px-3 py-2 rounded-md text-base font-medium text-white hover:bg-green-600 hover:shadow-md transition-all duration-200"
                 onClick={() => setIsMenuOpen(false)}
               >
@@ -283,7 +229,7 @@ export default function Navbar() {
                   handleSignOut();
                   setIsMenuOpen(false);
                 }}
-                className="w-full text-left px-3 py-2 rounded-md text-base font-medium text-red-300 hover:bg-green-600 hover:text-red-100 hover:shadow-md transition-all duration-200"
+                className="w-full text-left block px-3 py-2 rounded-md text-base font-medium text-white hover:bg-green-600 hover:shadow-md transition-all duration-200"
               >
                 Keluar
               </button>

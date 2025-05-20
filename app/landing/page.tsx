@@ -8,11 +8,13 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
 import { toast } from "sonner";
+import { useAuthStore } from "@/store/auth-store";
 
 function LandingPageContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const [mounted, setMounted] = useState(false);
+  const { user, signOut } = useAuthStore();
 
   useEffect(() => {
     setMounted(true);
@@ -39,6 +41,30 @@ function LandingPageContent() {
       window.history.replaceState({}, '', url.toString());
     }
   }, [searchParams, router]);
+
+  // Ekstrak inisial dari nama pengguna atau email
+  const getUserInitials = () => {
+    if (!user) return "?";
+    
+    if (user.user_metadata?.name) {
+      const nameParts = user.user_metadata.name.split(' ');
+      if (nameParts.length > 1) {
+        return `${nameParts[0][0]}${nameParts[nameParts.length - 1][0]}`.toUpperCase();
+      }
+      return nameParts[0][0].toUpperCase();
+    }
+    
+    if (user.email) {
+      return user.email[0].toUpperCase();
+    }
+    
+    return "U";
+  };
+
+  const handleSignOut = async () => {
+    await signOut();
+    router.push('/');
+  };
 
   if (!mounted) return null;
 
@@ -234,25 +260,64 @@ function LandingPageContent() {
             </div>
             
             <div className="mt-auto flex gap-4">
-              <Button asChild className="py-5 px-6 bg-green-600 hover:bg-green-700 hover:shadow-lg hover:scale-105 text-white border-0 rounded-md transition-all duration-200">
-                <Link href="/signin" className="flex items-center justify-center gap-2">
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5">
-                    <path fillRule="evenodd" d="M3 4.25A2.25 2.25 0 015.25 2h5.5A2.25 2.25 0 0113 4.25v2a.75.75 0 01-1.5 0v-2a.75.75 0 00-.75-.75h-5.5a.75.75 0 00-.75.75v11.5c0 .414.336.75.75.75h5.5a.75.75 0 00.75-.75v-2a.75.75 0 011.5 0v2A2.25 2.25 0 0110.75 18h-5.5A2.25 2.25 0 013 15.75V4.25z" clipRule="evenodd" />
-                    <path fillRule="evenodd" d="M6 10a.75.75 0 01.75-.75h9.546l-1.048-.943a.75.75 0 111.004-1.114l2.5 2.25a.75.75 0 010 1.114l-2.5 2.25a.75.75 0 11-1.004-1.114l1.048-.943H6.75A.75.75 0 016 10z" clipRule="evenodd" />
-                  </svg>
-                  Sign In
-                </Link>
-              </Button>
-              
-              <Button asChild variant="outline" className="py-5 px-6 border-green-500/50 bg-transparent text-white hover:bg-green-800/30 hover:shadow-lg hover:scale-105 rounded-md transition-all duration-200">
-                <Link href="/signup" className="flex items-center justify-center gap-2">
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5">
-                    <path d="M10 8a3 3 0 100-6 3 3 0 000 6zM3.465 14.493a1.23 1.23 0 00.41 1.412A9.957 9.957 0 0010 18c2.31 0 4.438-.784 6.131-2.1.43-.333.604-.903.408-1.41a7.002 7.002 0 00-13.074.003z" />
-                    <path d="M12 7a1 1 0 11-2 0 1 1 0 012 0z" />
-                  </svg>
-                  Create Account
-                </Link>
-              </Button>
+              {user ? (
+                <>
+                  {/* User sudah login - tampilkan profil dan tombol logout */}
+                  <Button asChild className="py-5 px-6 bg-green-600 hover:bg-green-700 hover:shadow-lg hover:scale-105 text-white border-0 rounded-md transition-all duration-200">
+                    <Link href="/dashboard" className="flex items-center justify-center gap-2">
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5">
+                        <path d="M10 8a3 3 0 100-6 3 3 0 000 6zM3.465 14.493a1.23 1.23 0 00.41 1.412A9.957 9.957 0 0010 18c2.31 0 4.438-.784 6.131-2.1.43-.333.604-.903.408-1.41a7.002 7.002 0 00-13.074.003z" />
+                      </svg>
+                      Dashboard
+                    </Link>
+                  </Button>
+                  
+                  <div className="flex gap-3 items-center">
+                    <div className="bg-white/10 p-2 rounded-md flex flex-col items-center">
+                      <div className="flex items-center gap-2">
+                        <div className="h-8 w-8 rounded-full bg-green-700 flex items-center justify-center text-white">
+                          {getUserInitials()}
+                        </div>
+                        <span className="text-sm text-white">{user.email}</span>
+                      </div>
+                    </div>
+                    
+                    <Button 
+                      variant="outline" 
+                      onClick={handleSignOut}
+                      className="py-5 px-6 border-green-500/50 bg-transparent text-white hover:bg-green-800/30 hover:shadow-lg hover:scale-105 rounded-md transition-all duration-200 flex items-center justify-center gap-2"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5">
+                        <path fillRule="evenodd" d="M3 4.25A2.25 2.25 0 015.25 2h5.5A2.25 2.25 0 0113 4.25v2a.75.75 0 01-1.5 0v-2a.75.75 0 00-.75-.75h-5.5a.75.75 0 00-.75.75v11.5c0 .414.336.75.75.75h5.5a.75.75 0 00.75-.75v-2a.75.75 0 011.5 0v2A2.25 2.25 0 0110.75 18h-5.5A2.25 2.25 0 013 15.75V4.25z" clipRule="evenodd" />
+                        <path fillRule="evenodd" d="M19 10a.75.75 0 00-.75-.75H8.704l1.048-.943a.75.75 0 10-1.004-1.114l-2.5 2.25a.75.75 0 000 1.114l2.5 2.25a.75.75 0 101.004-1.114l-1.048-.943h9.546A.75.75 0 0019 10z" clipRule="evenodd" />
+                      </svg>
+                      Keluar
+                    </Button>
+                  </div>
+                </>
+              ) : (
+                <>
+                  {/* User belum login - tampilkan tombol sign in dan sign up */}
+                  <Button asChild className="py-5 px-6 bg-green-600 hover:bg-green-700 hover:shadow-lg hover:scale-105 text-white border-0 rounded-md transition-all duration-200">
+                    <Link href="/signin" className="flex items-center justify-center gap-2">
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5">
+                        <path fillRule="evenodd" d="M3 4.25A2.25 2.25 0 015.25 2h5.5A2.25 2.25 0 0113 4.25v2a.75.75 0 01-1.5 0v-2a.75.75 0 00-.75-.75h-5.5a.75.75 0 00-.75.75v11.5c0 .414.336.75.75.75h5.5a.75.75 0 00.75-.75v-2a.75.75 0 011.5 0v2A2.25 2.25 0 0110.75 18h-5.5A2.25 2.25 0 013 15.75V4.25z" clipRule="evenodd" />
+                        <path fillRule="evenodd" d="M6 10a.75.75 0 01.75-.75h9.546l-1.048-.943a.75.75 0 111.004-1.114l2.5 2.25a.75.75 0 010 1.114l-2.5 2.25a.75.75 0 11-1.004-1.114l1.048-.943H6.75A.75.75 0 016 10z" clipRule="evenodd" />
+                      </svg>
+                      Sign In
+                    </Link>
+                  </Button>
+                  
+                  <Button asChild variant="outline" className="py-5 px-6 border-green-500/50 bg-transparent text-white hover:bg-green-800/30 hover:shadow-lg hover:scale-105 rounded-md transition-all duration-200">
+                    <Link href="/signup" className="flex items-center justify-center gap-2">
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5">
+                        <path d="M10 8a3 3 0 100-6 3 3 0 000 6zM3.465 14.493a1.23 1.23 0 00.41 1.412A9.957 9.957 0 0010 18c2.31 0 4.438-.784 6.131-2.1.43-.333.604-.903.408-1.41a7.002 7.002 0 00-13.074.003z" />
+                      </svg>
+                      Create Account
+                    </Link>
+                  </Button>
+                </>
+              )}
             </div>
           </div>
           

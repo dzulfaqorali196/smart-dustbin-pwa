@@ -174,6 +174,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   updateProfile: async (profile) => {
     set({ isLoading: true, error: null });
     try {
+      // 1. Update user_metadata di auth
       const { error } = await supabase.auth.updateUser({
         data: profile
       });
@@ -181,6 +182,39 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       if (error) {
         toast.error('Update profil gagal: ' + error.message);
         throw error;
+      }
+
+      // 2. Simpan juga di tabel profiles (CREATE IF NOT EXISTS)
+      const { data: currentUser } = await supabase.auth.getUser();
+      if (currentUser?.user) {
+        // Cek apakah profil sudah ada
+        const { data: existingProfile } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', currentUser.user.id)
+          .single();
+
+        if (existingProfile) {
+          // Update profil yang ada
+          await supabase
+            .from('profiles')
+            .update({
+              name: profile.name || existingProfile.name,
+              avatar_url: profile.avatar_url || existingProfile.avatar_url,
+              updated_at: new Date().toISOString()
+            })
+            .eq('id', currentUser.user.id);
+        } else {
+          // Buat profil baru
+          await supabase
+            .from('profiles')
+            .insert({
+              id: currentUser.user.id,
+              name: profile.name || currentUser.user.user_metadata?.name,
+              avatar_url: profile.avatar_url || currentUser.user.user_metadata?.avatar_url,
+              email: currentUser.user.email
+            });
+        }
       }
       
       // Refresh user data
@@ -198,6 +232,33 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     try {
       const { data } = await supabase.auth.getSession();
       const { data: userData } = await supabase.auth.getUser();
+      
+      if (userData?.user) {
+        // Coba ambil data profil kustom dari tabel profiles
+        const { data: profileData } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', userData.user.id)
+          .single();
+        
+        // Jika ada profil kustom, gunakan data dari sana untuk override metadata
+        if (profileData) {
+          // Buat salinan user untuk dimodifikasi
+          const userWithCustomProfile = { ...userData.user };
+          // Override metadata dengan data dari profil kustom
+          userWithCustomProfile.user_metadata = {
+            ...userWithCustomProfile.user_metadata,
+            name: profileData.name || userWithCustomProfile.user_metadata?.name,
+            avatar_url: profileData.avatar_url || userWithCustomProfile.user_metadata?.avatar_url
+          };
+          
+          set({ 
+            user: userWithCustomProfile,
+            isLoading: false 
+          });
+          return;
+        }
+      }
       
       set({ 
         user: userData?.user || null,

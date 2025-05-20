@@ -6,8 +6,10 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useAuthStore } from '@/store/auth-store';
+import { FormattedBin, getAllBins, subscribeToBinsUpdates } from '@/lib/api/bins';
 import { motion } from "framer-motion";
 import { Suspense, useEffect, useState } from 'react';
+import Link from 'next/link';
 
 // Data bins sekarang menggunakan API
 
@@ -15,16 +17,34 @@ function DashboardContent() {
   const { user } = useAuthStore();
   const [isLoading, setIsLoading] = useState(true);
   const [mounted, setMounted] = useState(false);
+  const [allBins, setAllBins] = useState<FormattedBin[]>([]);
   
   useEffect(() => {
     setMounted(true);
     
-    // Simulasi loading data
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 1000);
+    // Mengambil data bin dari Supabase
+    const fetchBins = async () => {
+      try {
+        setIsLoading(true);
+        const bins = await getAllBins();
+        setAllBins(bins);
+        setIsLoading(false);
+      } catch (error) {
+        console.error('Error fetching bins:', error);
+        setIsLoading(false);
+      }
+    };
     
-    return () => clearTimeout(timer);
+    fetchBins();
+    
+    // Subscribe ke perubahan data
+    const unsubscribe = subscribeToBinsUpdates((updatedBins) => {
+      setAllBins(updatedBins);
+    });
+    
+    return () => {
+      unsubscribe();
+    };
   }, []);
 
   if (!mounted) return null;
@@ -37,6 +57,25 @@ function DashboardContent() {
     if (hour < 12) return 'Selamat Pagi';
     if (hour < 18) return 'Selamat Siang';
     return 'Selamat Malam';
+  };
+  
+  // Menghitung statistik dari data bin
+  const getTotalBins = () => allBins.length;
+  
+  const getAlmostFullBins = () => {
+    return allBins.filter(bin => bin.fillLevel >= 70 && bin.fillLevel < 90).length;
+  };
+  
+  const getNeedsAttentionBins = () => {
+    return allBins.filter(bin => bin.fillLevel >= 90).length;
+  };
+  
+  const getCollectionEfficiency = () => {
+    if (allBins.length === 0) return 0;
+    
+    // Hitung efisiensi berdasarkan persentase bin yang tidak penuh
+    const nonFullBins = allBins.filter(bin => bin.fillLevel < 80).length;
+    return Math.round((nonFullBins / allBins.length) * 100);
   };
 
   return (
@@ -79,9 +118,9 @@ function DashboardContent() {
                 <Skeleton className="h-9 w-full" />
               ) : (
                 <>
-                  <div className="text-2xl font-bold text-black">12</div>
+                  <div className="text-2xl font-bold text-black">{getTotalBins()}</div>
                   <p className="text-xs text-gray-500 mt-1">
-                    +2 dibandingkan bulan lalu
+                    {getTotalBins() > 0 ? `${getTotalBins()} tempat sampah aktif` : 'Tidak ada tempat sampah'}
                   </p>
                 </>
               )}
@@ -108,9 +147,9 @@ function DashboardContent() {
                 <Skeleton className="h-9 w-full" />
               ) : (
                 <>
-                  <div className="text-2xl font-bold text-black">4</div>
+                  <div className="text-2xl font-bold text-black">{getAlmostFullBins()}</div>
                   <p className="text-xs text-gray-500 mt-1">
-                    +1 dalam 24 jam terakhir
+                    {getAlmostFullBins() > 0 ? `${getAlmostFullBins()} tempat sampah hampir penuh` : 'Semua tempat sampah dalam kondisi baik'}
                   </p>
                 </>
               )}
@@ -137,9 +176,9 @@ function DashboardContent() {
                 <Skeleton className="h-9 w-full" />
               ) : (
                 <>
-                  <div className="text-2xl font-bold text-black">2</div>
+                  <div className="text-2xl font-bold text-black">{getNeedsAttentionBins()}</div>
                   <p className="text-xs text-gray-500">
-                    -1 dibandingkan kemarin
+                    {getNeedsAttentionBins() > 0 ? `${getNeedsAttentionBins()} tempat sampah perlu segera dikosongkan` : 'Tidak ada yang perlu perhatian khusus'}
                   </p>
                 </>
               )}
@@ -166,9 +205,9 @@ function DashboardContent() {
                 <Skeleton className="h-9 w-full" />
               ) : (
                 <>
-                  <div className="text-2xl font-bold text-black">86%</div>
+                  <div className="text-2xl font-bold text-black">{getCollectionEfficiency()}%</div>
                   <p className="text-xs text-gray-500">
-                    +2.5% dibandingkan minggu lalu
+                    Efisiensi pengumpulan sampah saat ini
                   </p>
                 </>
               )}
@@ -192,12 +231,13 @@ function DashboardContent() {
           <Button 
             size="sm" 
             className="bg-green-600 hover:bg-green-700 text-white font-medium"
+            asChild
           >
-            Lihat Semua
+            <Link href="/map">Lihat Semua</Link>
           </Button>
         </div>
         
-                <BinList limit={3} onSelectBin={(bin) => console.log('Selected bin:', bin)} />
+        <BinList limit={3} onSelectBin={(bin) => console.log('Selected bin:', bin)} />
       </motion.div>
 
       {/* Aktivitas terbaru */}
@@ -228,86 +268,34 @@ function DashboardContent() {
               </div>
             ) : (
               <ul className="space-y-3">
-                <motion.li
-                  whileHover={{ scale: 1.01 }}
-                  transition={{ type: "spring", stiffness: 400, damping: 10 }}
-                  className="flex items-center gap-4 rounded-lg bg-white shadow-sm border border-gray-100 p-3"
-                >
-                  <div className="w-2 h-10 bg-green-500 rounded-md"></div>
-                  <div className="flex-1">
-                    <p className="text-sm font-medium leading-none">Bin #DT-001 dikosongkan</p>
-                    <p className="text-sm text-gray-500">2 jam yang lalu</p>
-                  </div>
-                  <div className="flex items-center gap-1 text-sm text-gray-500 bg-gray-50 px-3 py-1 rounded-full">
-                    <span>Petugas: Ahmad S.</span>
-                  </div>
-                </motion.li>
-                
-                <motion.li
-                  whileHover={{ scale: 1.01 }}
-                  transition={{ type: "spring", stiffness: 400, damping: 10 }}
-                  className="flex items-center gap-4 rounded-lg bg-white shadow-sm border border-gray-100 p-3"
-                >
-                  <div className="w-2 h-10 bg-yellow-500 rounded-md"></div>
-                  <div className="flex-1">
-                    <p className="text-sm font-medium leading-none">Bin #DT-003 mendekati kapasitas penuh</p>
-                    <p className="text-sm text-gray-500">6 jam yang lalu</p>
-                  </div>
-                  <div className="flex items-center gap-1 text-sm bg-yellow-500/10 text-yellow-700 px-3 py-1 rounded-full">
-                    <span>90% kapasitas</span>
-                  </div>
-                </motion.li>
-                
-                <motion.li
-                  whileHover={{ scale: 1.01 }}
-                  transition={{ type: "spring", stiffness: 400, damping: 10 }}
-                  className="flex items-center gap-4 rounded-lg bg-white shadow-sm border border-gray-100 p-3"
-                >
-                  <div className="w-2 h-10 bg-green-500 rounded-md"></div>
-                  <div className="flex-1">
-                    <p className="text-sm font-medium leading-none">Bin #DT-007 dikosongkan</p>
-                    <p className="text-sm text-gray-500">Kemarin, 16:30</p>
-                  </div>
-                  <div className="flex items-center gap-1 text-sm text-gray-500 bg-gray-50 px-3 py-1 rounded-full">
-                    <span>Petugas: Budi W.</span>
-                  </div>
-                </motion.li>
-                
-                <motion.li
-                  whileHover={{ scale: 1.01 }}
-                  transition={{ type: "spring", stiffness: 400, damping: 10 }}
-                  className="flex items-center gap-4 rounded-lg bg-white shadow-sm border border-gray-100 p-3"
-                >
-                  <div className="w-2 h-10 bg-red-500 rounded-md"></div>
-                  <div className="flex-1">
-                    <p className="text-sm font-medium leading-none">Bin #DT-005 terdeteksi tidak aktif</p>
-                    <p className="text-sm text-gray-500">2 hari yang lalu</p>
-                  </div>
-                  <div className="flex items-center gap-1 text-sm bg-red-500/10 text-red-700 px-3 py-1 rounded-full">
-                    <span>Membutuhkan pemeriksaan</span>
-                  </div>
-                </motion.li>
+                {allBins.length > 0 ? (
+                  allBins
+                    .sort((a, b) => new Date(b.lastUpdated).getTime() - new Date(a.lastUpdated).getTime())
+                    .slice(0, 4)
+                    .map((bin) => (
+                      <motion.li
+                        key={bin.id}
+                        whileHover={{ scale: 1.01 }}
+                        transition={{ type: "spring", stiffness: 400, damping: 10 }}
+                        className="flex items-center gap-4 rounded-lg bg-white shadow-sm border border-gray-100 p-3"
+                      >
+                        <div className={`w-2 h-10 ${bin.fillLevel > 90 ? 'bg-red-500' : bin.fillLevel > 70 ? 'bg-yellow-500' : 'bg-green-500'} rounded-md`}></div>
+                        <div className="flex-1">
+                          <p className="text-sm font-medium leading-none">{bin.name}</p>
+                          <p className="text-sm text-gray-500">{bin.location} - Level: {bin.fillLevel}%</p>
+                        </div>
+                        <div className="flex items-center gap-1 text-sm text-gray-500 bg-gray-50 px-3 py-1 rounded-full">
+                          <span>Terakhir update: {new Date(bin.lastUpdated).toLocaleTimeString()}</span>
+                        </div>
+                      </motion.li>
+                    ))
+                ) : (
+                  <p className="text-center text-gray-400 py-4">Tidak ada aktivitas terbaru</p>
+                )}
               </ul>
             )}
           </CardContent>
         </Card>
-      </motion.div>
-      
-      {/* Stats section */}
-      <motion.div 
-        initial={{ y: 20, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ delay: 0.8, duration: 0.4 }}
-        className="grid grid-cols-2 gap-4 mt-6"
-      >
-        <div className="bg-green-600/10 backdrop-blur-sm rounded-lg p-4 text-center shadow-sm">
-          <div className="text-3xl font-bold text-green-700">98%</div>
-          <div className="text-sm text-green-600 mt-1">Collection Efficiency</div>
-        </div>
-        <div className="bg-green-600/10 backdrop-blur-sm rounded-lg p-4 text-center shadow-sm">
-          <div className="text-3xl font-bold text-green-700">30%</div>
-          <div className="text-sm text-green-600 mt-1">Cost Reduction</div>
-        </div>
       </motion.div>
     </div>
   );

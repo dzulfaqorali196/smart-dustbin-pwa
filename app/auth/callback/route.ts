@@ -19,14 +19,12 @@ export async function GET(request: NextRequest) {
     // Exchange code with session
     await supabase.auth.exchangeCodeForSession(code);
     
-    // Tambahkan parameter success=true untuk memberi tahu client bahwa login berhasil
-    const redirectUrl = new URL('/', request.url);
-    redirectUrl.searchParams.set('auth_success', 'true');
-    redirectUrl.searchParams.set('provider', requestUrl.searchParams.get('provider') || 'oauth');
+    // Redirect langsung ke dashboard setelah login berhasil
+    const redirectUrl = new URL('/dashboard', request.url);
     
     return NextResponse.redirect(redirectUrl);
   }
 
-  // Redirect ke halaman utama setelah login berhasil
-  return NextResponse.redirect(new URL('/', request.url));
+  // Redirect ke dashboard setelah login berhasil
+  return NextResponse.redirect(new URL('/dashboard', request.url));
 } 

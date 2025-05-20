@@ -15,7 +15,7 @@ import { useState } from 'react';
 
 export default function SignIn() {
   const router = useRouter();
-  const { signIn, signInWithGoogle, signInWithGithub, isLoading } = useAuthStore();
+  const { signIn, signInWithGoogle, signInWithGithub, isLoading, checkSession } = useAuthStore();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
@@ -35,7 +35,8 @@ export default function SignIn() {
       if (result.error) {
         setFormError(result.error);
       } else {
-        router.push('/');
+        await checkSession();
+        router.push('/dashboard');
       }
     } catch (e) {
       const err = e as Error;
