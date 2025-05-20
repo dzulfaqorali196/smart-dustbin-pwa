@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import L from 'leaflet';
 import { getMarkerColor, calculateFillPercentage } from './bin-detail-map';
 import 'leaflet/dist/leaflet.css';
@@ -26,9 +26,8 @@ interface BinMapComponentProps {
 export default function BinMapComponent({ bin, mapKey }: BinMapComponentProps) {
   const mapRef = useRef<L.Map | null>(null);
   const mapContainerRef = useRef<HTMLDivElement>(null);
-  const [isMapInitialized, setIsMapInitialized] = useState(false);
   const mapId = useRef(`bin-map-${bin.id}-${Date.now()}`);
-  const position: [number, number] = [Number(bin.latitude), Number(bin.longitude)];
+  const position = useMemo<[number, number]>(() => [Number(bin.latitude), Number(bin.longitude)], [bin.latitude, bin.longitude]);
 
   // Inisialisasi peta ketika komponen dimount atau data berubah
   useEffect(() => {
@@ -146,7 +145,6 @@ export default function BinMapComponent({ bin, mapKey }: BinMapComponentProps) {
       }).setContent(popupContent));
       
       mapRef.current = map;
-      setIsMapInitialized(true);
     }
     
     // Cleanup function - hapus peta ketika komponen unmount

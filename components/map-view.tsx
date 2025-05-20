@@ -63,9 +63,10 @@ export default function MapView() {
             setCenter([latSum / data.length, lngSum / data.length]);
           }
         }
-      } catch (err: any) {
+      } catch (err: Error | unknown) {
         console.error('Error fetching bins:', err);
-        setError(err.message || 'Terjadi kesalahan saat mengambil data tempat sampah');
+        const errorMessage = err instanceof Error ? err.message : 'Terjadi kesalahan saat mengambil data tempat sampah';
+        setError(errorMessage);
       } finally {
         setIsLoading(false);
       }

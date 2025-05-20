@@ -43,7 +43,6 @@ export default function MapComponent({ bins, center, mapKey }: MapComponentProps
   const router = useRouter();
   const mapRef = useRef<L.Map | null>(null);
   const mapContainerRef = useRef<HTMLDivElement>(null);
-  const [isMapInitialized, setIsMapInitialized] = useState(false);
   const mapId = useRef(`map-${Date.now()}`);
   
   // Inisialisasi peta ketika komponen dimount atau data berubah
@@ -181,7 +180,6 @@ export default function MapComponent({ bins, center, mapKey }: MapComponentProps
       });
       
       mapRef.current = map;
-      setIsMapInitialized(true);
     }
     
     // Cleanup function - hapus peta ketika komponen unmount

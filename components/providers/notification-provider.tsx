@@ -3,7 +3,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { 
   isNotificationSupported, 
-  getNotificationPermissionStatus,
   requestNotificationPermission,
   sendTestNotification,
   sendBinFullNotification,
@@ -42,11 +41,11 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
           setPermission(Notification.permission);
         };
         
-        // @ts-ignore - Properti ini ada di beberapa browser tetapi tidak didokumentasikan di TypeScript
+        // @ts-expect-error - Properti ini ada di beberapa browser tetapi tidak didokumentasikan di TypeScript
         Notification.onpermissionchange = handlePermissionChange;
         
         return () => {
-          // @ts-ignore
+          // @ts-expect-error
           Notification.onpermissionchange = null;
         };
       }
