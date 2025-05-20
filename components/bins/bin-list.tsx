@@ -1,35 +1,68 @@
 'use client';
 
-import { Bin } from '@/types/bin';
+import { useEffect, useState } from 'react';
+import { FormattedBin, getAllBins, subscribeToBinsUpdates } from '@/lib/api/bins';
 import BinCard from './bin-card';
-import { useRouter } from 'next/navigation';
+import { Skeleton } from '@/components/ui/skeleton';
 
 interface BinListProps {
-  bins: Bin[];
+  onSelectBin?: (bin: FormattedBin) => void;
+  limit?: number;
 }
 
-export default function BinList({ bins }: BinListProps) {
-  const router = useRouter();
-
-  const handleBinClick = (binId: string) => {
-    router.push(`/dustbins/${binId}`);
-  };
-
-  if (bins.length === 0) {
+export default function BinList({ onSelectBin, limit }: BinListProps) {
+  const [bins, setBins] = useState<FormattedBin[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  
+  useEffect(() => {
+    // Fungsi untuk memuat data awal
+    const loadInitialData = async () => {
+      try {
+        setIsLoading(true);
+        const data = await getAllBins();
+        setBins(limit ? data.slice(0, limit) : data);
+      } catch (error) {
+        console.error('Error loading bins:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    // Muat data awal
+    loadInitialData();
+    
+    // Subscribe ke pembaruan
+    const unsubscribe = subscribeToBinsUpdates((updatedBins) => {
+      setBins(limit ? updatedBins.slice(0, limit) : updatedBins);
+    });
+    
+    // Unsubscribe ketika komponen unmount
+    return () => {
+      unsubscribe();
+    };
+  }, [limit]);
+  
+  if (isLoading) {
     return (
-      <div className="text-center py-8">
-        <p className="text-gray-500 dark:text-gray-400">Tidak ada tempat sampah yang ditemukan.</p>
+      <div className="space-y-4">
+        {[...Array(limit || 3)].map((_, i) => (
+          <Skeleton key={i} className="h-36 w-full rounded-lg" />
+        ))}
       </div>
     );
   }
-
+  
+  if (bins.length === 0) {
+    return <p className="text-center text-gray-500 py-4">Tidak ada tempat sampah yang ditemukan.</p>;
+  }
+  
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+    <div className="space-y-4">
       {bins.map((bin) => (
         <BinCard 
           key={bin.id} 
-          bin={bin}
-          onClick={() => handleBinClick(bin.id)}
+          bin={bin} 
+          onClick={() => onSelectBin && onSelectBin(bin)} 
         />
       ))}
     </div>

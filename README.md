@@ -22,6 +22,73 @@ Aplikasi Progressive Web App (PWA) untuk sistem monitoring tempat sampah pintar 
 - Zustand (State Management)
 - PWA (Progressive Web App)
 
+## Komponen Hardware IoT
+
+Proyek ini menggunakan perangkat IoT berikut:
+- ESP8266 (NodeMCU)
+- Sensor Ultrasonik HC-SR04
+- Modul GPS NEO-6M
+- LCD I2C 16x2
+- Kabel jumper (male-to-female dan male-to-male)
+
+## Konfigurasi IoT
+
+1. **Perakitan Hardware**
+   - Hubungkan ESP8266 dengan sensor ultrasonik:
+     - VCC sensor ke 3.3V ESP8266
+     - GND sensor ke GND ESP8266
+     - Trigger pin ke D1
+     - Echo pin ke D2
+   - Hubungkan ESP8266 dengan GPS NEO-6M:
+     - VCC GPS ke 3.3V ESP8266
+     - GND GPS ke GND ESP8266
+     - TX GPS ke D5
+     - RX GPS ke D6
+   - Hubungkan ESP8266 dengan LCD I2C:
+     - VCC LCD ke 5V ESP8266
+     - GND LCD ke GND ESP8266
+     - SDA LCD ke D2
+     - SCL LCD ke D1
+
+2. **Setup IDE Arduino**
+   - Install Arduino IDE
+   - Tambahkan dukungan ESP8266: File > Preferences > Additional Board Manager URLs: `http://arduino.esp8266.com/stable/package_esp8266com_index.json`
+   - Install board ESP8266: Tools > Board > Boards Manager > Cari "ESP8266" dan install
+   - Install library yang dibutuhkan:
+     - ArduinoJson
+     - TinyGPS++
+     - LiquidCrystal_I2C
+
+3. **Upload Program**
+   - Buka file `arduino/smart_dustbin_iot.ino`
+   - Ubah konfigurasi WiFi dan API key sesuai dengan kebutuhan
+   - Pilih board NodeMCU 1.0 di Tools > Board
+   - Upload ke ESP8266
+
+## Endpoint API untuk IoT
+
+API tersedia di `/api/bins/update` untuk menerima data dari perangkat IoT:
+
+- **URL**: `/api/bins/update`
+- **Method**: POST
+- **Body**:
+  ```json
+  {
+    "bin_id": "1", 
+    "fill_level": 75,
+    "latitude": -6.2088,
+    "longitude": 106.8456,
+    "api_key": "smart-dustbin-secret-key"
+  }
+  ```
+- **Response**: 
+  ```json
+  {
+    "success": true,
+    "data": { "id": "1", "name": "Bin #DT-001", ... }
+  }
+  ```
+
 ## Konfigurasi Supabase
 
 1. Buat akun di [Supabase](https://supabase.com)
@@ -31,9 +98,11 @@ Aplikasi Progressive Web App (PWA) untuk sistem monitoring tempat sampah pintar 
    ```
    NEXT_PUBLIC_SUPABASE_URL=your-supabase-url
    NEXT_PUBLIC_SUPABASE_ANON_KEY=your-supabase-anon-key
+   IOT_API_KEY=smart-dustbin-secret-key
    ```
 5. Aktifkan Authentication di Supabase dashboard
 6. Konfigurasi Email Authentication di Supabase
+7. Buat tabel `bins` dan `alerts` dengan struktur yang sesuai dengan tipe data di `types/supabase.ts`
 
 ## Google OAuth Setup
 

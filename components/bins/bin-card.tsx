@@ -1,8 +1,8 @@
-import { Bin } from '@/types/bin';
+import { FormattedBin } from '@/lib/api/bins';
 import CapacityIndicator from './capacity-indicator';
 
 interface BinCardProps {
-  bin: Bin;
+  bin: FormattedBin;
   onClick?: () => void;
 }
 

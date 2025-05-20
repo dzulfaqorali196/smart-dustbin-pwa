@@ -9,39 +9,7 @@ import { useAuthStore } from '@/store/auth-store';
 import { motion } from "framer-motion";
 import { Suspense, useEffect, useState } from 'react';
 
-// Contoh data bins
-const mockBins = [
-  {
-    id: '1',
-    name: 'Bin #DT-001',
-    location: 'Jl. Gatot Subroto No. 12',
-    fillLevel: 75,
-    isActive: true,
-    lastUpdated: new Date().toISOString(),
-    latitude: -6.2088,
-    longitude: 106.8456
-  },
-  {
-    id: '2',
-    name: 'Bin #DT-002',
-    location: 'Jl. Sudirman No. 45',
-    fillLevel: 30,
-    isActive: true,
-    lastUpdated: new Date().toISOString(),
-    latitude: -6.2150,
-    longitude: 106.8316
-  },
-  {
-    id: '3',
-    name: 'Bin #DT-003',
-    location: 'Taman Menteng',
-    fillLevel: 90,
-    isActive: true,
-    lastUpdated: new Date().toISOString(),
-    latitude: -6.1957,
-    longitude: 106.8322
-  },
-];
+// Data bins sekarang menggunakan API
 
 function DashboardContent() {
   const { user } = useAuthStore();
@@ -229,15 +197,7 @@ function DashboardContent() {
           </Button>
         </div>
         
-        {isLoading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {[1, 2, 3].map((i) => (
-              <Skeleton key={i} className="h-40 w-full rounded-lg" />
-            ))}
-          </div>
-        ) : (
-          <BinList bins={mockBins} />
-        )}
+                <BinList limit={3} onSelectBin={(bin) => console.log('Selected bin:', bin)} />
       </motion.div>
 
       {/* Aktivitas terbaru */}
