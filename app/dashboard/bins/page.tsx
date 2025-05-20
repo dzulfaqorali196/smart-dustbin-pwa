@@ -7,9 +7,9 @@ import { Input } from '@/components/ui/input';
 import { FormattedBin, getAllBins, subscribeToBinsUpdates } from '@/lib/api/bins';
 import { Badge } from '@/components/ui/badge';
 import { useRouter } from 'next/navigation';
-import { ChevronLeft, Filter, Gauge, Home, ListFilter, Plus, RefreshCcw, Search } from 'lucide-react';
+import { ChevronLeft, Gauge, Home, ListFilter, Plus, RefreshCcw, Search } from 'lucide-react';
 import Link from 'next/link';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Select, SelectContent, SelectItem, SelectTrigger } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from 'sonner';
 import { useNotifications } from '@/components/providers/notification-provider';
@@ -60,7 +60,7 @@ export default function DashboardBinsPage() {
     return () => {
       unsubscribe();
     };
-  }, [sendBinFullNotification]);
+  }, [sendBinFullNotification, searchQuery, activeFilter, sort]);
 
   // Menerapkan filter dan pencarian ke data
   const applyFilters = (
@@ -120,11 +120,11 @@ export default function DashboardBinsPage() {
 
   const getStatusBadgeClass = (fillLevel: number) => {
     if (fillLevel < 30) {
-      return 'bg-emerald-100 text-emerald-800 border border-emerald-200';
+      return 'bg-emerald-100 text-black border border-emerald-200';
     } else if (fillLevel < 70) {
-      return 'bg-amber-100 text-amber-800 border border-amber-200';
+      return 'bg-amber-100 text-black border border-amber-200';
     } else {
-      return 'bg-rose-100 text-rose-800 border border-rose-200';
+      return 'bg-rose-100 text-black border border-rose-200';
     }
   };
 
@@ -169,10 +169,10 @@ export default function DashboardBinsPage() {
         <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
           <div className="flex flex-col md:flex-row gap-3">
             <div className="relative flex-grow">
-              <Search className="absolute left-3 top-3 text-gray-400 h-4 w-4" />
+              <Search className="absolute left-3 top-3 text-black h-4 w-4" />
               <Input
                 placeholder="Cari tempat sampah..."
-                className="pl-10"
+                className="pl-10 text-black placeholder:text-gray-400"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
@@ -225,25 +225,25 @@ export default function DashboardBinsPage() {
           <TabsList className="w-full grid grid-cols-4 h-12 bg-gray-100 rounded-none p-0 border-b">
             <TabsTrigger 
               value="all" 
-              className="rounded-none py-3 text-sm data-[state=active]:bg-white"
+              className="rounded-none py-3 text-sm data-[state=active]:bg-white text-black"
             >
               Semua
             </TabsTrigger>
             <TabsTrigger 
               value="low" 
-              className="rounded-none py-3 text-sm data-[state=active]:bg-white"
+              className="rounded-none py-3 text-sm data-[state=active]:bg-white text-black"
             >
               Rendah (0-30%)
             </TabsTrigger>
             <TabsTrigger 
               value="medium" 
-              className="rounded-none py-3 text-sm data-[state=active]:bg-white"
+              className="rounded-none py-3 text-sm data-[state=active]:bg-white text-black"
             >
               Sedang (30-70%)
             </TabsTrigger>
             <TabsTrigger 
               value="high" 
-              className="rounded-none py-3 text-sm data-[state=active]:bg-white"
+              className="rounded-none py-3 text-sm data-[state=active]:bg-white text-black"
             >
               Tinggi ({'>'}70%)
             </TabsTrigger>
@@ -265,10 +265,10 @@ export default function DashboardBinsPage() {
                       <CardHeader className="border-b bg-gray-50 p-4">
                         <div className="flex justify-between">
                           <div className="space-y-1">
-                            <CardTitle className="text-lg font-semibold">{bin.name}</CardTitle>
-                            <p className="text-sm text-gray-600">{bin.location}</p>
+                            <CardTitle className="text-lg font-semibold text-black">{bin.name}</CardTitle>
+                            <p className="text-sm text-black">{bin.location}</p>
                           </div>
-                          <Badge className={getStatusBadgeClass(bin.fillLevel)}>
+                          <Badge className={`${getStatusBadgeClass(bin.fillLevel)} hover:shadow-md transition-all hover:scale-105 cursor-pointer`}>
                             {getStatusText(bin.fillLevel)} • {bin.fillLevel}%
                           </Badge>
                         </div>
@@ -276,7 +276,7 @@ export default function DashboardBinsPage() {
                       <CardContent className="p-4">
                         <div className="space-y-3">
                           <div>
-                            <p className="text-sm text-gray-600 mb-1 flex justify-between">
+                            <p className="text-sm text-black mb-1 flex justify-between">
                               <span>Level Pengisian</span>
                               <span className="font-medium">{bin.fillLevel}%</span>
                             </p>
@@ -295,7 +295,7 @@ export default function DashboardBinsPage() {
                           </div>
                           
                           <div className="flex items-center justify-between text-sm mt-2">
-                            <span className="text-gray-600">Terakhir diperbarui:</span>
+                            <span className="text-black">Terakhir diperbarui:</span>
                             <span className="font-medium">
                               {new Date(bin.lastUpdated).toLocaleString('id-ID', {
                                 day: 'numeric',
@@ -312,7 +312,7 @@ export default function DashboardBinsPage() {
                 ))}
               </div>
             ) : (
-              <div className="text-center py-12 text-gray-500">
+              <div className="text-center py-12 text-black">
                 <Gauge className="h-12 w-12 mx-auto text-gray-400 mb-3" />
                 <h3 className="text-lg font-medium text-gray-900">Tidak ada tempat sampah ditemukan</h3>
                 <p className="mt-1 text-sm">
