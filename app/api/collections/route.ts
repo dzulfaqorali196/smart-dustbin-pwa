@@ -1,104 +1,124 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { Database } from '@/types/supabase';
 import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
 import { cookies } from 'next/headers';
-import { Database } from '@/types/supabase';
+import { NextRequest, NextResponse } from 'next/server';
 
-// GET: Mendapatkan daftar pengumpulan sampah
-export async function GET(req: NextRequest) {
-  try {
-    const searchParams = req.nextUrl.searchParams;
-    const bin_id = searchParams.get('bin_id');
-    const limit = searchParams.get('limit') ? parseInt(searchParams.get('limit')!) : 10;
-    
-    const supabase = createRouteHandlerClient<Database>({ cookies });
-    
-    let query = supabase
-      .from('collections')
-      .select(`
-        *,
-        bins (
-          id,
-          name,
-          location
-        )
-      `)
-      .order('collected_at', { ascending: false })
-      .limit(limit);
-    
-    // Filter berdasarkan bin_id jika diberikan
-    if (bin_id) {
-      query = query.eq('bin_id', bin_id);
-    }
-    
-    const { data, error } = await query;
-    
-    if (error) {
-      console.error('Error fetching collections:', error);
-      return NextResponse.json({ error: 'Gagal mengambil data pengumpulan' }, { status: 500 });
-    }
-    
-    return NextResponse.json(data);
-    
-  } catch (error) {
-    console.error('Error in collections API:', error);
-    return NextResponse.json({ error: 'Terjadi kesalahan server' }, { status: 500 });
-  }
+// Handler untuk OPTIONS request (CORS pre-flight)
+export async function OPTIONS(req: NextRequest) {
+  return new NextResponse(null, {
+    status: 204,
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+      'Access-Control-Max-Age': '86400',
+    },
+  });
 }
 
-// POST: Mencatat pengumpulan sampah baru
+// Handler untuk GET request (testing only)
+export async function GET() {
+  return NextResponse.json({
+    message: 'Endpoint aktif! Gunakan metode POST untuk mengirim data dari ESP8266.'
+  });
+}
+
+// Handler untuk POST request (main functionality)
 export async function POST(req: NextRequest) {
   try {
-    const body = await req.json();
-    const { bin_id, fill_level_before, notes } = body;
+    // Handle CORS
+    const origin = req.headers.get('origin') || '*';
+    const responseHeaders = {
+      'Access-Control-Allow-Origin': origin,
+      'Access-Control-Allow-Methods': 'POST, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+    };
+
+    // Menerima data dari ESP8266
+    const { bin_id, fill_level, latitude, longitude, api_key } = await req.json();
+    
+    console.log("Received data:", { bin_id, fill_level, latitude, longitude });
     
     // Validasi input
-    if (!bin_id) {
-      return NextResponse.json({ error: 'ID tempat sampah diperlukan' }, { status: 400 });
+    if (!bin_id || fill_level === undefined || !api_key) {
+      return NextResponse.json({ error: 'Parameter tidak lengkap' }, { 
+        status: 400,
+        headers: responseHeaders
+      });
     }
     
-    const supabase = createRouteHandlerClient<Database>({ cookies });
-    
-    // Dapatkan user saat ini
-    const { data: { user } } = await supabase.auth.getUser();
-    
-    if (!user) {
-      return NextResponse.json({ error: 'Autentikasi diperlukan' }, { status: 401 });
+    // Validasi API key
+    const API_KEY = process.env.IOT_API_KEY || 'smart-dustbin-secret-key';
+    if (api_key !== API_KEY) {
+      return NextResponse.json({ error: 'API key tidak valid' }, { 
+        status: 401,
+        headers: responseHeaders
+      });
     }
     
-    // Catat pengumpulan
+    // Koneksi ke Supabase
+    const cookieStore = cookies();
+    const supabase = createRouteHandlerClient<Database>({ cookies: () => cookieStore });
+    
+    // Perbarui data tempat sampah
     const { data, error } = await supabase
-      .from('collections')
-      .insert({
-        bin_id,
-        user_id: user.id,
-        fill_level_before: fill_level_before || 0,
-        notes,
-        collected_at: new Date().toISOString()
-      })
-      .select();
-    
-    if (error) {
-      console.error('Error creating collection:', error);
-      return NextResponse.json({ error: 'Gagal mencatat pengumpulan' }, { status: 500 });
-    }
-    
-    // Update level tempat sampah menjadi kosong
-    const { error: updateError } = await supabase
       .from('bins')
       .update({
-        current_capacity: 0,
+        current_capacity: fill_level,
+        latitude: latitude || null,
+        longitude: longitude || null,
         last_updated: new Date().toISOString()
       })
-      .eq('id', bin_id);
-    
-    if (updateError) {
-      console.error('Error updating bin level:', updateError);
+      .eq('id', bin_id)
+      .select();
+      
+    if (error) {
+      console.error('Error updating bin:', error);
+      return NextResponse.json({ error: 'Gagal memperbarui data' }, { 
+        status: 500,
+        headers: responseHeaders
+      });
     }
     
-    return NextResponse.json({ success: true, data });
+    // Buat alert jika level tinggi
+    if (fill_level > 80) {
+      const { error: alertError } = await supabase
+        .from('alerts')
+        .insert({
+          bin_id,
+          alert_type: 'FULL',
+          priority: 'HIGH',
+          status: 'OPEN',
+          created_at: new Date().toISOString()
+        })
+        .select();
+        
+      if (alertError) {
+        console.error('Error creating alert:', alertError);
+      }
+    }
     
-  } catch (error) {
-    console.error('Error in collections API:', error);
-    return NextResponse.json({ error: 'Terjadi kesalahan server' }, { status: 500 });
+    return NextResponse.json({ 
+      success: true, 
+      data,
+      message: 'Data berhasil diperbarui' 
+    }, { 
+      status: 200,
+      headers: responseHeaders
+    });
+    
+  } catch (error: any) {
+    console.error('Error in bin update:', error);
+    return NextResponse.json({ 
+      error: 'Terjadi kesalahan server', 
+      details: error.message 
+    }, { 
+      status: 500,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'POST, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+      }
+    });
   }
-} 
+}
