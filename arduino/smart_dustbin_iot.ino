@@ -9,8 +9,8 @@
 #include <LiquidCrystal_I2C.h>
 
 // Konfigurasi WiFi
-const char *ssid = "ITB Hotspot";
-const char *password = "";
+const char *ssid = "testarduino";
+const char *password = "dzulganteng";
 
 // API Key (harus sama dengan yang di server)
 const char *apiKey = "smart-dustbin-secret-key";
