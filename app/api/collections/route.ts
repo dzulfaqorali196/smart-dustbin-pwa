@@ -4,7 +4,7 @@ import { cookies } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
 
 // Handler untuk OPTIONS request (CORS pre-flight)
-export async function OPTIONS(req: NextRequest) {
+export async function OPTIONS() {
   return new NextResponse(null, {
     status: 204,
     headers: {
@@ -107,11 +107,12 @@ export async function POST(req: NextRequest) {
       headers: responseHeaders
     });
     
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error in bin update:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     return NextResponse.json({ 
       error: 'Terjadi kesalahan server', 
-      details: error.message 
+      details: errorMessage 
     }, { 
       status: 500,
       headers: {

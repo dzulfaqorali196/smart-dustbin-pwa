@@ -27,11 +27,11 @@ export async function POST(req: NextRequest) {
     const supabase = createRouteHandlerClient<Database>({ cookies: () => cookieStore });
     
     // Tampilkan semua bin yang ada di database (untuk debugging)
-    const { data: allBins, error: listError } = await supabase.from('bins').select('id');
+    const { data: allBins } = await supabase.from('bins').select('id');
     console.log("All bins in database:", allBins);
     
     // Cari bin dengan ID yang diberikan
-    const { data: existingBin, error: findError } = await supabase
+    const { error: findError } = await supabase
       .from('bins')
       .select('id')
       .eq('id', bin_id)
@@ -98,11 +98,12 @@ export async function POST(req: NextRequest) {
       message: 'Data berhasil diperbarui' 
     });
     
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error in bin update:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     return NextResponse.json({ 
       error: 'Terjadi kesalahan server', 
-      details: error.message 
+      details: errorMessage 
     }, { status: 500 });
   }
 }
