@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef, useMemo } from 'react';
+import { useEffect, useRef, useMemo } from 'react';
 import L from 'leaflet';
 import { getMarkerColor, calculateFillPercentage } from './bin-detail-map';
 import 'leaflet/dist/leaflet.css';

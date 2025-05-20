@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import L from 'leaflet';
 import { useRouter } from 'next/navigation';
 import 'leaflet/dist/leaflet.css';

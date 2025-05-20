@@ -41,11 +41,11 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
           setPermission(Notification.permission);
         };
         
-        // @ts-expect-error - Properti ini ada di beberapa browser tetapi tidak didokumentasikan di TypeScript
+        // @ts-expect-error - Property onpermissionchange exists in browsers but is not defined in TypeScript interface
         Notification.onpermissionchange = handlePermissionChange;
         
         return () => {
-          // @ts-expect-error
+          // @ts-expect-error - Property onpermissionchange exists in browsers but is not defined in TypeScript interface
           Notification.onpermissionchange = null;
         };
       }

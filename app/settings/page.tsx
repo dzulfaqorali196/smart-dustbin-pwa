@@ -7,7 +7,6 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useAuthStore } from '@/store/auth-store';
 import { Bell, User, LogOut, Save, ChevronLeft, Home, BellOff } from 'lucide-react';
 import { toast } from 'sonner';
@@ -54,7 +53,7 @@ export default function SettingsPage() {
   }, [user]);
   
   // Fungsi untuk mengubah setting
-  const handleSettingChange = (key: string, value: any) => {
+  const handleSettingChange = (key: string, value: boolean) => {
     setSettings(prev => {
       const newSettings = { ...prev, [key]: value };
       // Simpan ke localStorage
