@@ -1,5 +1,5 @@
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import { Database } from '@/types/supabase';
+import { createBrowserClient } from '@supabase/ssr';
 
 // Tipe untuk bin yang sudah diformat
 export type FormattedBin = {
@@ -13,12 +13,16 @@ export type FormattedBin = {
   longitude: number | null;
 };
 
+// Inisialisasi Supabase Client untuk browser
+const supabase = createBrowserClient<Database>(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+);
+
 /**
  * Mendapatkan semua data tempat sampah
  */
 export async function getAllBins(): Promise<FormattedBin[]> {
-  const supabase = createClientComponentClient<Database>();
-  
   const { data, error } = await supabase
     .from('bins')
     .select('*')
@@ -46,8 +50,6 @@ export async function getAllBins(): Promise<FormattedBin[]> {
  * Mendapatkan data tempat sampah berdasarkan ID
  */
 export async function getBinById(id: string): Promise<FormattedBin | null> {
-  const supabase = createClientComponentClient<Database>();
-  
   const { data, error } = await supabase
     .from('bins')
     .select('*')
@@ -76,8 +78,6 @@ export async function getBinById(id: string): Promise<FormattedBin | null> {
  * @param callback Fungsi yang dipanggil ketika ada pembaruan data
  */
 export function subscribeToBinsUpdates(callback: (bins: FormattedBin[]) => void) {
-  const supabase = createClientComponentClient<Database>();
-  
   // Subscribe ke perubahan tabel bins
   const subscription = supabase
     .channel('bins-channel')
@@ -95,4 +95,4 @@ export function subscribeToBinsUpdates(callback: (bins: FormattedBin[]) => void)
   return () => {
     subscription.unsubscribe();
   };
-} 
+}

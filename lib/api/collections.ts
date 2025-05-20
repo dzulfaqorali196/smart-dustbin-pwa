@@ -1,5 +1,11 @@
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import { Database } from '@/types/supabase';
+import { createBrowserClient } from '@supabase/ssr';
+
+// Initialize Supabase client for browser
+const supabase = createBrowserClient<Database>(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+);
 
 // Tipe untuk collection yang sudah diformat
 export type FormattedCollection = {
@@ -17,8 +23,6 @@ export type FormattedCollection = {
  * Mendapatkan semua data pengumpulan sampah
  */
 export async function getAllCollections(limit: number = 10): Promise<FormattedCollection[]> {
-  const supabase = createClientComponentClient<Database>();
-  
   const { data, error } = await supabase
     .from('collections')
     .select(`
@@ -54,8 +58,6 @@ export async function getAllCollections(limit: number = 10): Promise<FormattedCo
  * Mendapatkan data pengumpulan berdasarkan bin_id
  */
 export async function getCollectionsByBin(binId: string, limit: number = 10): Promise<FormattedCollection[]> {
-  const supabase = createClientComponentClient<Database>();
-  
   const { data, error } = await supabase
     .from('collections')
     .select(`
@@ -92,8 +94,6 @@ export async function getCollectionsByBin(binId: string, limit: number = 10): Pr
  * Mencatat pengumpulan sampah baru
  */
 export async function createCollection(binId: string, fillLevelBefore: number, notes?: string): Promise<FormattedCollection | null> {
-  const supabase = createClientComponentClient<Database>();
-  
   // Pertama, pastikan user terautentikasi
   const { data: { user } } = await supabase.auth.getUser();
   
@@ -150,4 +150,4 @@ export async function createCollection(binId: string, fillLevelBefore: number, n
     collectedAt: data.collected_at,
     userId: data.user_id
   };
-} 
+}
