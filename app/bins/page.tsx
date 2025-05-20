@@ -7,10 +7,9 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase/client';
-import { Trash, Plus, Search, Filter, RefreshCcw, ChevronLeft, Home } from 'lucide-react';
+import { Trash, Plus, Search, RefreshCcw, ChevronLeft, Home } from 'lucide-react';
 import { useAuthStore } from '@/store/auth-store';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import Link from 'next/link';
 
 interface Bin {
   id: string;

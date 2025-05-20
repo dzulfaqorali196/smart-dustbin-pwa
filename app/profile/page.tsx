@@ -7,7 +7,6 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Separator } from '@/components/ui/separator';
 import { LogOut, Mail, User as UserIcon, Calendar, Clock, Shield, ChevronLeft } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -18,7 +17,6 @@ import Link from 'next/link';
 
 export default function ProfilePage() {
   const { user, signOut, updateProfile } = useAuthStore();
-  const [isLoading, setIsLoading] = useState(true);
   const [isUpdating, setIsUpdating] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [name, setName] = useState('');
@@ -32,13 +30,6 @@ export default function ProfilePage() {
       // sehingga perubahan nama akan dipertahankan meskipun user logout dan login kembali
       setName(user.user_metadata?.name || '');
     }
-    
-    // Simulasi loading data
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 500);
-    
-    return () => clearTimeout(timer);
   }, [user]);
 
   const handleSignOut = async () => {
