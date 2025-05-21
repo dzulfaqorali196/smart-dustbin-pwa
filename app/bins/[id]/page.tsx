@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -47,7 +47,7 @@ export default function BinDetailPage() {
   const [isUserOwner, setIsUserOwner] = useState(false);
 
   // Fungsi untuk mengambil data tempat sampah
-  const fetchBin = async () => {
+  const fetchBin = useCallback(async () => {
     try {
       setIsLoading(true);
       setError(null);
@@ -76,7 +76,7 @@ export default function BinDetailPage() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [id, user]);
 
   // Efek untuk memuat data saat komponen dimuat
   useEffect(() => {

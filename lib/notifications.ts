@@ -2,6 +2,11 @@
  * File helper untuk menangani notifikasi browser di aplikasi Smart Dustbin
  */
 
+// Memperluas tipe NotificationOptions bawaan untuk menambahkan properti vibrate yang didukung di browser
+interface ExtendedNotificationOptions extends NotificationOptions {
+  vibrate?: number[];
+}
+
 /**
  * Memeriksa apakah browser mendukung notifikasi
  */
@@ -33,7 +38,7 @@ export const requestNotificationPermission = async (): Promise<NotificationPermi
 /**
  * Menampilkan notifikasi dengan opsi default
  */
-export const showNotification = (title: string, options?: NotificationOptions): void => {
+export const showNotification = (title: string, options?: ExtendedNotificationOptions): void => {
   if (!isNotificationSupported()) {
     console.warn('Notifikasi tidak didukung di browser ini');
     return;
@@ -45,7 +50,7 @@ export const showNotification = (title: string, options?: NotificationOptions): 
   }
   
   // Opsi default
-  const defaultOptions: NotificationOptions = {
+  const defaultOptions: ExtendedNotificationOptions = {
     icon: '/icons/manifest-icon-192.maskable.png',
     badge: '/icons/manifest-icon-192.maskable.png',
     vibrate: [200, 100, 200],
@@ -53,7 +58,8 @@ export const showNotification = (title: string, options?: NotificationOptions): 
   };
   
   try {
-    new Notification(title, defaultOptions);
+    // Menggunakan type assertion karena TypeScript tidak mengenali vibrate
+    new Notification(title, defaultOptions as NotificationOptions);
   } catch (error) {
     console.error('Gagal menampilkan notifikasi:', error);
   }

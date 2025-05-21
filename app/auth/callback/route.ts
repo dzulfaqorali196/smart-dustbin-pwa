@@ -18,15 +18,17 @@ export async function GET(request: NextRequest) {
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
       {
         cookies: {
-          get(name: string) {
-            return cookieStore.get(name)?.value
+          getAll: () => {
+            return cookieStore.getAll().map((cookie) => ({
+              name: cookie.name,
+              value: cookie.value
+            }))
           },
-          set(name: string, value: string, options: Record<string, any>) {
-            cookieStore.set({ name, value, ...options })
-          },
-          remove(name: string, options: Record<string, any>) {
-            cookieStore.set({ name, value: '', ...options })
-          },
+          setAll: (cookies) => {
+            cookies.forEach(({ name, value, options }) => {
+              cookieStore.set({ name, value, ...options })
+            })
+          }
         },
       }
     );
