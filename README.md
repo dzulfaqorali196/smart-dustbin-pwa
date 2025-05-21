@@ -11,6 +11,62 @@ Aplikasi Progressive Web App (PWA) untuk sistem monitoring tempat sampah pintar 
 - Dapat diakses offline (PWA)
 - Dapat diinstal di perangkat mobile dan desktop
 
+## Elemen Fungsional
+
+1. **Manajemen Pengguna**
+   - Registrasi dan login pengguna
+   - Autentikasi menggunakan email dan password
+   - Autentikasi menggunakan Google OAuth
+   - Manajemen profil pengguna
+
+2. **Monitoring Tempat Sampah**
+   - Pemantauan tingkat pengisian tempat sampah secara real-time
+   - Visualisasi data pengisian tempat sampah
+   - Riwayat tingkat pengisian 
+   - Dashboard untuk melihat status semua tempat sampah
+
+3. **Visualisasi Peta**
+   - Menampilkan lokasi semua tempat sampah pada peta
+   - Navigasi ke lokasi tempat sampah
+   - Informasi status tempat sampah pada peta
+
+4. **Notifikasi**
+   - Pemberitahuan saat tempat sampah hampir penuh
+   - Log riwayat notifikasi
+   - Manajemen pengaturan notifikasi
+
+5. **Integrasi IoT**
+   - Penerimaan data dari perangkat IoT (ESP8266)
+   - Endpoint API untuk pembaruan data tempat sampah
+   - Verifikasi keamanan API menggunakan API key
+   - Penyimpanan data dari sensor (tingkat pengisian, lokasi GPS)
+
+6. **Fungsionalitas PWA**
+   - Kemampuan bekerja offline
+   - Instalasi pada perangkat mobile dan desktop
+   - Dukungan service worker untuk caching
+   - Sinkronisasi data saat kembali online
+
+7. **Manajemen Data**
+   - Penyimpanan data di Supabase
+   - Pembaruan data secara real-time
+   - Kueri dan analisis data tempat sampah
+
+8. **Statistik dan Analitik**
+   - Visualisasi data penggunaan tempat sampah
+   - Statistik tingkat pengisian rata-rata
+   - Laporan dan tren penggunaan
+
+9. **Konfigurasi dan Pengaturan**
+   - Pengaturan aplikasi
+   - Manajemen preferensi pengguna
+   - Konfigurasi notifikasi
+
+10. **Keamanan**
+    - Middleware untuk proteksi rute
+    - Autentikasi dan otorisasi
+    - Validasi API untuk komunikasi dengan perangkat IoT
+
 ## Teknologi
 
 - Next.js 15.3
