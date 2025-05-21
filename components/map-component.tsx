@@ -60,7 +60,7 @@ export default function MapComponent({ bins, center, mapKey }: MapComponentProps
       const map = L.map(mapContainerRef.current).setView(center, 17);
       
       // Menggunakan peta dengan warna yang lebih kontras dari Stamen
-      L.tileLayer('https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.png', {
+      L.tileLayer(`https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.png${process.env.NEXT_PUBLIC_STADIA_MAPS_API_KEY ? `?api_key=${process.env.NEXT_PUBLIC_STADIA_MAPS_API_KEY}` : ''}`, {
         attribution: '&copy; <a href="https://stadiamaps.com/">Stadia Maps</a>, &copy; <a href="https://openmaptiles.org/">OpenMapTiles</a> &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors',
         maxZoom: 20
       }).addTo(map);

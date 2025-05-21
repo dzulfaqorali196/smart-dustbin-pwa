@@ -192,7 +192,7 @@ export default function BinDetailPage() {
                 <CardHeader className="border-b border-gray-100 bg-gradient-to-r from-green-50 to-green-100 dark:from-green-900/30 dark:to-green-800/30">
                   <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
                     <div>
-                      <CardTitle className="text-xl text-gray-800">{bin.name}</CardTitle>
+                      <CardTitle className="text-xl text-black">{bin.name}</CardTitle>
                       {bin.location && (
                         <p className="mt-1 text-gray-600 text-sm">{bin.location}</p>
                       )}
@@ -367,7 +367,7 @@ export default function BinDetailPage() {
             <div className="md:col-span-1">
               <Card className="border-0 shadow-md bg-white h-full overflow-hidden">
                 <CardHeader className="border-b border-gray-100 p-4">
-                  <CardTitle className="text-lg text-gray-800 flex items-center">
+                  <CardTitle className="text-lg text-black flex items-center">
                     <MapPin className="w-5 h-5 mr-2 text-green-600" />
                     Lokasi Tempat Sampah
                   </CardTitle>

@@ -190,7 +190,7 @@ export default function BinsPage() {
                       <CardHeader className="p-4 bg-gray-50 border-b">
                         <div className="flex justify-between items-start">
                           <div>
-                            <CardTitle className="text-lg font-semibold">{bin.name}</CardTitle>
+                            <CardTitle className="text-lg font-semibold text-black">{bin.name}</CardTitle>
                             <p className="text-sm text-gray-600">{bin.location}</p>
                           </div>
                           <Badge className={`${color}`}>
@@ -271,7 +271,7 @@ export default function BinsPage() {
                         <CardHeader className="p-4 bg-gray-50 border-b">
                           <div className="flex justify-between items-start">
                             <div>
-                              <CardTitle className="text-lg font-semibold">{bin.name}</CardTitle>
+                              <CardTitle className="text-lg font-semibold text-black">{bin.name}</CardTitle>
                               <p className="text-sm text-gray-600">{bin.location}</p>
                             </div>
                             <Badge className="bg-emerald-100 text-emerald-800 border-emerald-300">
@@ -334,7 +334,7 @@ export default function BinsPage() {
                       <CardHeader className="p-4 bg-gray-50 border-b">
                         <div className="flex justify-between items-start">
                           <div>
-                            <CardTitle className="text-lg font-semibold">{bin.name}</CardTitle>
+                            <CardTitle className="text-lg font-semibold text-black">{bin.name}</CardTitle>
                             <p className="text-sm text-gray-600">{bin.location}</p>
                           </div>
                           <Badge className="bg-amber-100 text-amber-800 border-amber-300">
@@ -394,7 +394,7 @@ export default function BinsPage() {
                       <CardHeader className="p-4 bg-gray-50 border-b">
                         <div className="flex justify-between items-start">
                           <div>
-                            <CardTitle className="text-lg font-semibold">{bin.name}</CardTitle>
+                            <CardTitle className="text-lg font-semibold text-black">{bin.name}</CardTitle>
                             <p className="text-sm text-gray-600">{bin.location}</p>
                           </div>
                           <Badge className="bg-rose-100 text-rose-800 border-rose-300">
