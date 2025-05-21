@@ -259,7 +259,7 @@ function LandingPageContent() {
               </motion.div>
             </div>
             
-            <div className="mt-auto flex gap-4">
+            <div className="mt-auto flex flex-wrap gap-4 justify-center">
               {user ? (
                 <>
                   {/* User sudah login - tampilkan profil dan tombol logout */}
@@ -298,7 +298,7 @@ function LandingPageContent() {
               ) : (
                 <>
                   {/* User belum login - tampilkan tombol sign in dan sign up */}
-                  <Button asChild className="py-5 px-6 bg-green-600 hover:bg-green-700 hover:shadow-lg hover:scale-105 text-white border-0 rounded-md transition-all duration-200">
+                  <Button asChild className="py-5 px-6 bg-green-600 hover:bg-green-700 hover:shadow-lg hover:scale-105 text-white border-0 rounded-md transition-all duration-200 w-full sm:w-auto">
                     <Link href="/signin" className="flex items-center justify-center gap-2">
                       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5">
                         <path fillRule="evenodd" d="M3 4.25A2.25 2.25 0 015.25 2h5.5A2.25 2.25 0 0113 4.25v2a.75.75 0 01-1.5 0v-2a.75.75 0 00-.75-.75h-5.5a.75.75 0 00-.75.75v11.5c0 .414.336.75.75.75h5.5a.75.75 0 00.75-.75v-2a.75.75 0 011.5 0v2A2.25 2.25 0 0110.75 18h-5.5A2.25 2.25 0 013 15.75V4.25z" clipRule="evenodd" />
@@ -308,7 +308,7 @@ function LandingPageContent() {
                     </Link>
                   </Button>
                   
-                  <Button asChild variant="outline" className="py-5 px-6 border-green-500/50 bg-transparent text-white hover:bg-green-800/30 hover:shadow-lg hover:scale-105 rounded-md transition-all duration-200">
+                  <Button asChild variant="outline" className="py-5 px-6 border-green-500/50 bg-transparent text-white hover:bg-green-800/30 hover:shadow-lg hover:scale-105 rounded-md transition-all duration-200 w-full sm:w-auto">
                     <Link href="/signup" className="flex items-center justify-center gap-2">
                       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5">
                         <path d="M10 8a3 3 0 100-6 3 3 0 000 6zM3.465 14.493a1.23 1.23 0 00.41 1.412A9.957 9.957 0 0010 18c2.31 0 4.438-.784 6.131-2.1.43-.333.604-.903.408-1.41a7.002 7.002 0 00-13.074.003z" />
@@ -334,55 +334,55 @@ function LandingPageContent() {
           </div>
           
           {/* Bottom features section */}
-          <div className="grid grid-cols-3 border-t border-gray-700">
-            <div className="py-4 px-5 flex items-center gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 border-t border-gray-700">
+            <div className="py-6 px-5 flex items-center gap-3 border-b sm:border-b-0 sm:border-r border-gray-700">
               <div className="text-green-400 flex-shrink-0">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6 md:w-5 md:h-5">
                   <path d="M11.584 2.376a.75.75 0 01.832 0l9 6a.75.75 0 11-.832 1.248L12 3.901 3.416 9.624a.75.75 0 01-.832-1.248l9-6z" />
                   <path fillRule="evenodd" d="M20.25 10.332v9.918H21a.75.75 0 010 1.5H3a.75.75 0 010-1.5h.75v-9.918a.75.75 0 01.634-.74A49.109 49.109 0 0112 9c2.59 0 5.134.202 7.616.592a.75.75 0 01.634.74zm-7.5 2.418a.75.75 0 00-1.5 0v6.75a.75.75 0 001.5 0v-6.75zm3-.75a.75.75 0 01.75.75v6.75a.75.75 0 01-1.5 0v-6.75a.75.75 0 01.75-.75zM9 12.75a.75.75 0 00-1.5 0v6.75a.75.75 0 001.5 0v-6.75z" clipRule="evenodd" />
                 </svg>
               </div>
               <div>
-                <div className="text-sm font-semibold">Smart IoT Integration</div>
-                <p className="text-xs text-gray-400">Connect all waste bins with IoT sensors</p>
+                <div className="text-base font-semibold">Smart IoT Integration</div>
+                <p className="text-sm text-gray-400">Connect all waste bins with IoT sensors</p>
               </div>
             </div>
             
-            <div className="py-4 px-5 border-l border-r border-gray-700 flex items-center gap-3">
+            <div className="py-6 px-5 flex items-center gap-3 border-b sm:border-b-0 md:border-r border-gray-700">
               <div className="text-green-400 flex-shrink-0">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6 md:w-5 md:h-5">
                   <path fillRule="evenodd" d="M11.54 22.351l.07.04.028.016a.76.76 0 00.723 0l.028-.015.071-.041a16.975 16.975 0 001.144-.742 19.58 19.58 0 002.683-2.282c1.944-1.99 3.963-4.98 3.963-8.827a8.25 8.25 0 00-16.5 0c0 3.846 2.02 6.837 3.963 8.827a19.58 19.58 0 002.682 2.282 16.975 16.975 0 001.145.742zM12 13.5a3 3 0 100-6 3 3 0 000 6z" clipRule="evenodd" />
                 </svg>
               </div>
               <div>
-                <div className="text-sm font-semibold">Route Optimization</div>
-                <p className="text-xs text-gray-400">Plan efficient waste collection routes</p>
+                <div className="text-base font-semibold">Route Optimization</div>
+                <p className="text-sm text-gray-400">Plan efficient waste collection routes</p>
               </div>
             </div>
             
-            <div className="py-4 px-5 flex items-center gap-3">
+            <div className="py-6 px-5 flex items-center gap-3">
               <div className="text-green-400 flex-shrink-0">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6 md:w-5 md:h-5">
                   <path fillRule="evenodd" d="M2.25 13.5a8.25 8.25 0 018.25-8.25.75.75 0 01.75.75v6.75H18a.75.75 0 01.75.75 8.25 8.25 0 01-16.5 0z" clipRule="evenodd" />
                   <path fillRule="evenodd" d="M12.75 3a.75.75 0 01.75-.75 8.25 8.25 0 018.25 8.25.75.75 0 01-.75.75h-7.5a.75.75 0 01-.75-.75V3z" clipRule="evenodd" />
                 </svg>
               </div>
               <div>
-                <div className="text-sm font-semibold">Waste Analytics</div>
-                <p className="text-xs text-gray-400">Track waste patterns with detailed reports</p>
+                <div className="text-base font-semibold">Waste Analytics</div>
+                <p className="text-sm text-gray-400">Track waste patterns with detailed reports</p>
               </div>
             </div>
           </div>
           
           {/* Footer */}
-          <div className="py-3 px-6 border-t border-gray-700 flex justify-between items-center bg-gray-900/80">
-            <div className="flex items-center gap-3 text-xs">
+          <div className="py-3 px-4 border-t border-gray-700 flex flex-col md:flex-row justify-center items-center bg-gray-900/80 gap-3">
+            <div className="flex items-center gap-2 text-xs text-center w-full md:w-auto justify-center">
               <span>Version 1.0.0</span>
-              <span className="text-gray-600 mx-1">•</span>
+              <span className="text-gray-600 mx-1 hidden md:inline">•</span>
               <span>© 2025 Smart Dustbin System</span>
             </div>
             
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center justify-center gap-2 w-full md:w-auto">
               <Badge variant="secondary" className="text-xs bg-green-900/30 text-green-400">Real-time</Badge>
               <Badge variant="secondary" className="text-xs bg-green-900/30 text-green-400">IoT Enabled</Badge>
               <Badge variant="secondary" className="text-xs bg-green-900/30 text-green-400">Smart Analytics</Badge>

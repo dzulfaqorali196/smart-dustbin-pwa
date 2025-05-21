@@ -135,10 +135,10 @@ export default function DashboardBinsPage() {
   };
 
   return (
-    <div className="container mx-auto p-4 max-w-6xl">
-      <div className="flex flex-col space-y-6">
+    <div className="container mx-auto p-3 sm:p-4 max-w-6xl">
+      <div className="flex flex-col space-y-4 sm:space-y-6">
         {/* Header */}
-        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+        <div className="bg-white p-4 sm:p-6 rounded-lg shadow-sm border border-gray-200">
           <Button
             variant="ghost"
             onClick={() => router.push('/dashboard')}
@@ -146,7 +146,7 @@ export default function DashboardBinsPage() {
           >
             <ChevronLeft className="w-5 h-5 mr-1" />
             <Home className="w-5 h-5 mr-1" />
-            <span>Kembali ke Dashboard</span>
+            <span>Dashboard</span>
           </Button>
           <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
             <div>
@@ -159,7 +159,7 @@ export default function DashboardBinsPage() {
             >
               <Link href="/bins/add">
                 <Plus className="w-4 h-4 mr-2" />
-                Tambah Tempat Sampah
+                <span className="sm:inline">Tambah Tempat Sampah</span>
               </Link>
             </Button>
           </div>
@@ -177,19 +177,19 @@ export default function DashboardBinsPage() {
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
             </div>
-            <div className="flex gap-2">
+            <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
               <Select 
                 value={sort} 
                 onValueChange={(value) => setSort(value as 'name' | 'fillLevel' | 'lastUpdated')}
               >
-                <SelectTrigger className="w-[180px]">
-                  <ListFilter className="w-4 h-4 mr-2" />
+                <SelectTrigger className="sm:w-[180px] text-black bg-white border border-green-200" style={{backgroundColor: 'white'}}>
+                  <ListFilter className="w-4 h-4 mr-2 text-black" />
                   <span>Urutkan</span>
                 </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="name">Nama (A-Z)</SelectItem>
-                  <SelectItem value="fillLevel">Level Pengisian</SelectItem>
-                  <SelectItem value="lastUpdated">Terakhir Diperbarui</SelectItem>
+                <SelectContent sideOffset={4} className="bg-white border border-green-200 shadow-lg" style={{backgroundColor: 'white', backdropFilter: 'none'}}>
+                  <SelectItem value="name" className="text-black">Nama (A-Z)</SelectItem>
+                  <SelectItem value="fillLevel" className="text-black">Level Pengisian</SelectItem>
+                  <SelectItem value="lastUpdated" className="text-black">Terakhir Diperbarui</SelectItem>
                 </SelectContent>
               </Select>
               <Button 
@@ -222,40 +222,51 @@ export default function DashboardBinsPage() {
           onValueChange={(value) => setActiveFilter(value as 'all' | 'low' | 'medium' | 'high')}
           className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden"
         >
-          <TabsList className="w-full grid grid-cols-4 h-12 bg-gray-100 rounded-none p-0 border-b">
+          <TabsList className="w-full grid grid-cols-2 sm:grid-cols-4 h-12 bg-gray-50 rounded-none p-0 border-b border-gray-200">
             <TabsTrigger 
               value="all" 
-              className="rounded-none py-3 text-sm data-[state=active]:bg-white text-black"
+              className="rounded-none py-3 text-sm font-medium text-gray-600 transition-all
+              data-[state=active]:bg-white data-[state=active]:text-green-700 data-[state=active]:border-b-[3px] data-[state=active]:border-green-700 data-[state=active]:shadow-[inset_0_-1px_0_0_white]
+              hover:bg-gray-100 hover:text-green-600"
             >
               Semua
             </TabsTrigger>
             <TabsTrigger 
               value="low" 
-              className="rounded-none py-3 text-sm data-[state=active]:bg-white text-black"
+              className="rounded-none py-3 text-sm font-medium text-gray-600 transition-all
+              data-[state=active]:bg-white data-[state=active]:text-emerald-700 data-[state=active]:border-b-[3px] data-[state=active]:border-emerald-700 data-[state=active]:shadow-[inset_0_-1px_0_0_white]
+              hover:bg-gray-100 hover:text-emerald-600"
             >
-              Rendah (0-30%)
+              Rendah
+              <span className="hidden sm:inline"> (0-30%)</span>
             </TabsTrigger>
             <TabsTrigger 
               value="medium" 
-              className="rounded-none py-3 text-sm data-[state=active]:bg-white text-black"
+              className="rounded-none py-3 text-sm font-medium text-gray-600 transition-all
+              data-[state=active]:bg-white data-[state=active]:text-amber-700 data-[state=active]:border-b-[3px] data-[state=active]:border-amber-700 data-[state=active]:shadow-[inset_0_-1px_0_0_white]
+              hover:bg-gray-100 hover:text-amber-600"
             >
-              Sedang (30-70%)
+              Sedang
+              <span className="hidden sm:inline"> (30-70%)</span>
             </TabsTrigger>
             <TabsTrigger 
               value="high" 
-              className="rounded-none py-3 text-sm data-[state=active]:bg-white text-black"
+              className="rounded-none py-3 text-sm font-medium text-gray-600 transition-all
+              data-[state=active]:bg-white data-[state=active]:text-rose-700 data-[state=active]:border-b-[3px] data-[state=active]:border-rose-700 data-[state=active]:shadow-[inset_0_-1px_0_0_white]
+              hover:bg-gray-100 hover:text-rose-600"
             >
-              Tinggi ({'>'}70%)
+              Tinggi
+              <span className="hidden sm:inline"> ({'>'}70%)</span>
             </TabsTrigger>
           </TabsList>
           
-          <TabsContent value={activeFilter} className="p-6 mt-0">
+          <TabsContent value={activeFilter} className="p-4 sm:p-6 mt-6 sm:mt-0">
             {isLoading ? (
               <div className="flex justify-center items-center min-h-[200px]">
                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
               </div>
             ) : filteredBins.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
                 {filteredBins.map((bin) => (
                   <Link 
                     href={`/bins/${bin.id}`}

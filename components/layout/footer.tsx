@@ -14,7 +14,7 @@ export default function Footer() {
           <span>&copy; {currentYear} Smart Dustbin System</span>
         </div>
         
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="flex flex-wrap items-center justify-center gap-2">
           <Badge variant="secondary" className="text-xs bg-green-900/30 text-green-400">Real-time</Badge>
           <Badge variant="secondary" className="text-xs bg-green-900/30 text-green-400">IoT Enabled</Badge>
           <Badge variant="secondary" className="text-xs bg-green-900/30 text-green-400">Smart Analytics</Badge>

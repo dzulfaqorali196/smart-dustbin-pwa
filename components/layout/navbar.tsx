@@ -6,7 +6,7 @@ import { useAuthStore } from '@/store/auth-store';
 import { useRouter } from 'next/navigation';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { LogOut, User } from "lucide-react";
+import { LogOut, Menu, X, LayoutDashboard, Map, Trash2, Settings, User } from "lucide-react";
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -47,9 +47,9 @@ export default function Navbar() {
 
   return (
     <nav className="bg-gradient-to-r from-green-600 to-green-700 text-white shadow-md">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-full mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
-          <div className="flex items-center">
+          <div className="flex items-center pl-0 md:pl-2">
             <Link href="/" className="flex-shrink-0 flex items-center">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6 mr-2">
                 <path d="M11.584 2.376a.75.75 0 01.832 0l9 6a.75.75 0 11-.832 1.248L12 3.901 3.416 9.624a.75.75 0 01-.832-1.248l9-6z" />
@@ -59,8 +59,8 @@ export default function Navbar() {
             </Link>
           </div>
           
-          <div className="hidden md:block">
-            <div className="ml-10 flex items-center space-x-4">
+          <div className="hidden md:flex md:justify-end flex-1 pr-0 md:pr-2">
+            <div className="flex items-center space-x-4">
               {user ? (
                 <>
                   <Link href="/dashboard" className="px-3 py-2 rounded-md text-sm font-medium text-white hover:bg-green-700 hover:shadow-md transition-all duration-200">
@@ -68,12 +68,6 @@ export default function Navbar() {
                   </Link>
                   <Link href="/map" className="px-3 py-2 rounded-md text-sm font-medium text-white hover:bg-green-700 hover:shadow-md transition-all duration-200">
                     Peta
-                  </Link>
-                  
-                  {/* Profil Link */}
-                  <Link href="/profile" className="px-3 py-2 rounded-md text-sm font-medium text-white hover:bg-green-700 hover:shadow-md transition-all duration-200 flex items-center gap-2">
-                    <User className="w-4 h-4" />
-                    Profil
                   </Link>
                   
                   {/* Sign Out Button */}
@@ -87,7 +81,7 @@ export default function Navbar() {
                   </Button>
                   
                   {/* User Avatar - direct link to profile */}
-                  <Link href="/profile">
+                  <Link href="/profile" className="flex items-center" title="Lihat Profil">
                     <Avatar className="h-9 w-9 cursor-pointer hover:ring-2 hover:ring-white transition-all">
                       <AvatarImage src={user.user_metadata?.avatar_url} />
                       <AvatarFallback className="bg-green-800 text-white">{getUserInitials()}</AvatarFallback>
@@ -111,71 +105,16 @@ export default function Navbar() {
           </div>
           
           <div className="md:hidden flex items-center gap-2">
-            {user && (
-              <>
-                {/* Mobile Profile Link */}
-                <Link 
-                  href="/profile" 
-                  className="p-2 rounded-md text-white hover:bg-green-700 hover:shadow-md transition-all duration-200"
-                >
-                  <User className="w-5 h-5" />
-                </Link>
-                
-                {/* Mobile Sign Out Button */}
-                <Button 
-                  variant="ghost" 
-                  onClick={handleSignOut} 
-                  className="p-2 rounded-md text-white hover:bg-green-700 hover:shadow-md transition-all duration-200"
-                  size="icon"
-                >
-                  <LogOut className="w-5 h-5" />
-                </Button>
-                
-                {/* Mobile Avatar - direct link to profile */}
-                <Link href="/profile">
-                  <Avatar className="h-8 w-8 hover:ring-2 hover:ring-white transition-all">
-                    <AvatarImage src={user.user_metadata?.avatar_url} />
-                    <AvatarFallback className="bg-green-800 text-white text-xs">{getUserInitials()}</AvatarFallback>
-                  </Avatar>
-                </Link>
-              </>
-            )}
-            
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               className="inline-flex items-center justify-center p-2 rounded-md text-white hover:bg-green-700 hover:shadow-md focus:outline-none transition-all duration-200"
             >
               <span className="sr-only">Buka menu utama</span>
-              <svg
-                className={`${isMenuOpen ? 'hidden' : 'block'} h-6 w-6`}
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                aria-hidden="true"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M4 6h16M4 12h16M4 18h16"
-                />
-              </svg>
-              <svg
-                className={`${isMenuOpen ? 'block' : 'hidden'} h-6 w-6`}
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                aria-hidden="true"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
+              {isMenuOpen ? (
+                <X className="h-6 w-6" />
+              ) : (
+                <Menu className="h-6 w-6" />
+              )}
             </button>
           </div>
         </div>
@@ -188,16 +127,18 @@ export default function Navbar() {
             <>
               <Link
                 href="/signin"
-                className="block px-3 py-2 rounded-md text-base font-medium text-white hover:bg-green-600 hover:shadow-md transition-all duration-200"
+                className="block px-3 py-2 rounded-md text-base font-medium text-white hover:bg-green-600 hover:shadow-md transition-all duration-200 flex items-center gap-2"
                 onClick={() => setIsMenuOpen(false)}
               >
+                <User className="w-5 h-5" />
                 Masuk
               </Link>
               <Link
                 href="/signup"
-                className="block px-3 py-2 rounded-md text-base font-medium text-white bg-green-800 hover:bg-green-900 hover:shadow-md transition-all duration-200"
+                className="block px-3 py-2 rounded-md text-base font-medium text-white bg-green-800 hover:bg-green-900 hover:shadow-md transition-all duration-200 flex items-center gap-2"
                 onClick={() => setIsMenuOpen(false)}
               >
+                <User className="w-5 h-5" />
                 Daftar
               </Link>
             </>
@@ -205,37 +146,42 @@ export default function Navbar() {
             <>
               <Link
                 href="/dashboard"
-                className="block px-3 py-2 rounded-md text-base font-medium text-white hover:bg-green-600 hover:shadow-md transition-all duration-200"
+                className="block px-3 py-2 rounded-md text-base font-medium text-white hover:bg-green-600 hover:shadow-md transition-all duration-200 flex items-center gap-2"
                 onClick={() => setIsMenuOpen(false)}
               >
+                <LayoutDashboard className="w-5 h-5" />
                 Dashboard
               </Link>
               <Link
                 href="/map"
-                className="block px-3 py-2 rounded-md text-base font-medium text-white hover:bg-green-600 hover:shadow-md transition-all duration-200"
+                className="block px-3 py-2 rounded-md text-base font-medium text-white hover:bg-green-600 hover:shadow-md transition-all duration-200 flex items-center gap-2"
                 onClick={() => setIsMenuOpen(false)}
               >
+                <Map className="w-5 h-5" />
                 Peta
               </Link>
               <Link
                 href="/bins"
-                className="block px-3 py-2 rounded-md text-base font-medium text-white hover:bg-green-600 hover:shadow-md transition-all duration-200"
+                className="block px-3 py-2 rounded-md text-base font-medium text-white hover:bg-green-600 hover:shadow-md transition-all duration-200 flex items-center gap-2"
                 onClick={() => setIsMenuOpen(false)}
               >
+                <Trash2 className="w-5 h-5" />
                 Tempat Sampah
               </Link>
               <Link
                 href="/settings"
-                className="block px-3 py-2 rounded-md text-base font-medium text-white hover:bg-green-600 hover:shadow-md transition-all duration-200"
+                className="block px-3 py-2 rounded-md text-base font-medium text-white hover:bg-green-600 hover:shadow-md transition-all duration-200 flex items-center gap-2"
                 onClick={() => setIsMenuOpen(false)}
               >
+                <Settings className="w-5 h-5" />
                 Pengaturan
               </Link>
               <Link
                 href="/profile"
-                className="block px-3 py-2 rounded-md text-base font-medium text-white hover:bg-green-600 hover:shadow-md transition-all duration-200"
+                className="block px-3 py-2 rounded-md text-base font-medium text-white hover:bg-green-600 hover:shadow-md transition-all duration-200 flex items-center gap-2"
                 onClick={() => setIsMenuOpen(false)}
               >
+                <User className="w-5 h-5" />
                 Profil
               </Link>
               <button
@@ -243,8 +189,9 @@ export default function Navbar() {
                   handleSignOut();
                   setIsMenuOpen(false);
                 }}
-                className="w-full text-left block px-3 py-2 rounded-md text-base font-medium text-white hover:bg-green-600 hover:shadow-md transition-all duration-200"
+                className="w-full text-left block px-3 py-2 rounded-md text-base font-medium text-white hover:bg-green-600 hover:shadow-md transition-all duration-200 flex items-center gap-2"
               >
+                <LogOut className="w-5 h-5" />
                 Keluar
               </button>
             </>

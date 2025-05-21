@@ -7,7 +7,7 @@ export default function DustbinsRedirect() {
   const router = useRouter();
   
   useEffect(() => {
-    router.replace('/dashboard/bins');
+    router.replace('/bins');
   }, [router]);
   
   return (

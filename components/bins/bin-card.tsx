@@ -1,5 +1,6 @@
 import { FormattedBin } from '@/lib/api/bins';
 import CapacityIndicator from './capacity-indicator';
+import { motion } from 'framer-motion';
 
 interface BinCardProps {
   bin: FormattedBin;
@@ -8,34 +9,56 @@ interface BinCardProps {
 
 export default function BinCard({ bin, onClick }: BinCardProps) {
   return (
-    <div 
-      className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md hover:shadow-lg transition-shadow cursor-pointer"
+    <motion.div 
+      whileHover={{ scale: 1.01 }}
+      transition={{ type: "spring", stiffness: 400, damping: 10 }}
+      className="bg-white dark:bg-gray-800 p-3 sm:p-4 rounded-lg shadow hover:shadow-md transition-all cursor-pointer border border-gray-100 dark:border-gray-700"
       onClick={onClick}
     >
-      <h3 className="font-bold text-white">{bin.name}</h3>
-      <p className="text-sm text-gray-500 dark:text-gray-400">{bin.location}</p>
+      <div className="flex items-start justify-between">
+        <div>
+          <h3 className="font-semibold text-sm sm:text-base text-gray-900 dark:text-white">{bin.name}</h3>
+          <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-0.5">{bin.location}</p>
+        </div>
+        
+        <div className="flex items-center">
+          <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${
+            bin.isActive 
+              ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' 
+              : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
+          }`}>
+            {bin.isActive ? 'Aktif' : 'Tidak Aktif'}
+          </span>
+        </div>
+      </div>
       
-      <div className="mt-3">
+      <div className="mt-2 sm:mt-3">
         <CapacityIndicator capacity={bin.fillLevel} />
       </div>
       
-      <div className="mt-4 flex justify-between text-sm">
-        <div>
-          <p className="text-gray-500 dark:text-gray-400">Status:</p>
-          <p className={`font-medium ${bin.isActive ? 'text-green-500' : 'text-red-500'}`}>
-            {bin.isActive ? 'Aktif' : 'Tidak Aktif'}
-          </p>
+      <div className="mt-3 sm:mt-4 flex flex-col sm:flex-row sm:justify-between gap-2 sm:gap-4 text-xs sm:text-sm">
+        <div className="flex items-center gap-2">
+          <div className="w-2 h-8 rounded-full bg-gray-200 dark:bg-gray-700"></div>
+          <div>
+            <p className="text-gray-500 dark:text-gray-400">Level Pengisian</p>
+            <p className="font-medium text-gray-900 dark:text-white">{bin.fillLevel}%</p>
+          </div>
         </div>
-        <div>
-          <p className="text-gray-500 dark:text-gray-400">Terakhir Diperbarui:</p>
-          <p className="font-medium">{new Date(bin.lastUpdated).toLocaleString('id-ID', { 
-            day: 'numeric', 
-            month: 'short',
-            hour: '2-digit',
-            minute: '2-digit'
-          })}</p>
+        
+        <div className="flex items-center text-right sm:text-left">
+          <div>
+            <p className="text-gray-500 dark:text-gray-400">Update Terakhir</p>
+            <p className="font-medium text-gray-900 dark:text-white">
+              {new Date(bin.lastUpdated).toLocaleString('id-ID', { 
+                day: 'numeric', 
+                month: 'short',
+                hour: '2-digit',
+                minute: '2-digit'
+              })}
+            </p>
+          </div>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }

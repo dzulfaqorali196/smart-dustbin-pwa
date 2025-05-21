@@ -7,8 +7,15 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase/client';
-import { Trash, Plus, Search, RefreshCcw, ChevronLeft, Home } from 'lucide-react';
+import { Trash, Plus, Search, RefreshCcw, ChevronLeft, Home, Gauge, ListFilter } from 'lucide-react';
 import { useAuthStore } from '@/store/auth-store';
+import Link from 'next/link';
+import { 
+  Select, 
+  SelectContent, 
+  SelectItem, 
+  SelectTrigger
+} from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 interface Bin {
@@ -24,12 +31,14 @@ interface Bin {
 }
 
 export default function BinsPage() {
+  const router = useRouter();
   const [bins, setBins] = useState<Bin[]>([]);
   const [filteredBins, setFilteredBins] = useState<Bin[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
-  const router = useRouter();
+  const [sort, setSort] = useState<'name' | 'fillLevel' | 'lastUpdated'>('name');
   const { user } = useAuthStore();
+  const [activeFilter, setActiveFilter] = useState<'all' | 'low' | 'medium' | 'high'>('all');
 
   // Mengambil data tempat sampah
   const fetchBins = async () => {
@@ -71,32 +80,70 @@ export default function BinsPage() {
     };
   }, []);
 
-  // Mencari tempat sampah berdasarkan nama atau lokasi
+  // Menerapkan filter dan pengurutan
   useEffect(() => {
-    if (searchQuery.trim() === '') {
-      setFilteredBins(bins);
-    } else {
-      const query = searchQuery.toLowerCase();
-      const filtered = bins.filter(
-        bin => 
-          bin.name.toLowerCase().includes(query) || 
-          bin.location.toLowerCase().includes(query)
-      );
-      setFilteredBins(filtered);
-    }
-  }, [searchQuery, bins]);
-
-  // Menentukan status dan warna badge berdasarkan tingkat pengisian
-  const getBinStatusAndColor = (current: number, max: number) => {
-    const percentage = (current / max) * 100;
+    // Filter berdasarkan query pencarian
+    let result = bins;
     
-    if (percentage < 30) {
-      return { status: 'Rendah', color: 'bg-emerald-100 text-emerald-800 border-emerald-300' };
-    } else if (percentage < 70) {
-      return { status: 'Sedang', color: 'bg-amber-100 text-amber-800 border-amber-300' };
-    } else {
-      return { status: 'Penuh', color: 'bg-rose-100 text-rose-800 border-rose-300' };
+    if (searchQuery.trim()) {
+      const lowercaseQuery = searchQuery.toLowerCase();
+      result = result.filter(
+        bin => bin.name.toLowerCase().includes(lowercaseQuery) || 
+               bin.location?.toLowerCase().includes(lowercaseQuery)
+      );
     }
+    
+    // Filter berdasarkan kondisi
+    if (activeFilter !== 'all') {
+      result = result.filter(bin => {
+        const fillLevel = Math.round((bin.current_capacity / bin.max_capacity) * 100);
+        switch (activeFilter) {
+          case 'low': 
+            return fillLevel < 30;
+          case 'medium': 
+            return fillLevel >= 30 && fillLevel < 70;
+          case 'high': 
+            return fillLevel >= 70;
+          default: 
+            return true;
+        }
+      });
+    }
+    
+    // Sort data
+    result = [...result].sort((a, b) => {
+      const fillLevelA = Math.round((a.current_capacity / a.max_capacity) * 100);
+      const fillLevelB = Math.round((b.current_capacity / b.max_capacity) * 100);
+      
+      switch (sort) {
+        case 'name':
+          return a.name.localeCompare(b.name);
+        case 'fillLevel':
+          return fillLevelB - fillLevelA;
+        case 'lastUpdated':
+          return new Date(b.last_updated).getTime() - new Date(a.last_updated).getTime();
+        default:
+          return 0;
+      }
+    });
+    
+    setFilteredBins(result);
+  }, [searchQuery, activeFilter, sort, bins]);
+
+  const getStatusBadgeClass = (fillLevel: number) => {
+    if (fillLevel < 30) {
+      return 'bg-emerald-100 text-black border border-emerald-200';
+    } else if (fillLevel < 70) {
+      return 'bg-amber-100 text-black border border-amber-200';
+    } else {
+      return 'bg-rose-100 text-black border border-rose-200';
+    }
+  };
+
+  const getStatusText = (fillLevel: number) => {
+    if (fillLevel < 30) return 'Rendah';
+    if (fillLevel < 70) return 'Sedang';
+    return 'Tinggi';
   };
 
   // Format tanggal terakhir diperbarui
@@ -104,340 +151,211 @@ export default function BinsPage() {
     const date = new Date(dateString);
     return date.toLocaleString('id-ID', {
       day: 'numeric',
-      month: 'long',
-      year: 'numeric',
+      month: 'short',
       hour: '2-digit',
       minute: '2-digit'
     });
   };
 
   return (
-    <div className="container mx-auto p-4">
-      <div className="flex flex-col space-y-4">
+    <div className="container mx-auto p-3 sm:p-4 max-w-6xl">
+      <div className="flex flex-col space-y-4 sm:space-y-6">
         {/* Header */}
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-          <div>
-            <Button
-              variant="ghost"
-              onClick={() => router.push('/dashboard')}
-              className="text-green-700 hover:text-green-800 hover:bg-green-50 -ml-4 mb-2"
-            >
-              <ChevronLeft className="w-5 h-5 mr-1" />
-              <Home className="w-5 h-5 mr-1" />
-              <span>Kembali ke Dashboard</span>
-            </Button>
-            <h1 className="text-2xl font-bold">Tempat Sampah</h1>
-            <p className="text-gray-600">Kelola dan pantau status semua tempat sampah</p>
-          </div>
-          
-          {user && (
-            <Button
-              onClick={() => router.push('/bins/add')}
+        <div className="bg-white p-4 sm:p-6 rounded-lg shadow-sm border border-gray-200">
+          <Button
+            variant="ghost"
+            onClick={() => router.push('/dashboard')}
+            className="text-green-700 hover:text-green-800 hover:bg-green-50 -ml-2 mb-3"
+          >
+            <ChevronLeft className="w-5 h-5 mr-1" />
+            <Home className="w-5 h-5 mr-1" />
+            <span>Dashboard</span>
+          </Button>
+          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+            <div>
+              <h1 className="text-2xl font-bold text-black">Tempat Sampah</h1>
+              <p className="text-black">Kelola dan pantau semua tempat sampah</p>
+            </div>
+            <Button 
+              asChild
               className="bg-green-700 hover:bg-green-800 text-white"
             >
-              <Plus className="w-4 h-4 mr-2" />
-              Tambah Tempat Sampah
+              <Link href="/bins/add">
+                <Plus className="w-4 h-4 mr-2" />
+                <span className="sm:inline">Tambah Tempat Sampah</span>
+              </Link>
             </Button>
-          )}
+          </div>
         </div>
-
-        {/* Search and Filter */}
-        <div className="bg-white p-4 rounded-lg border shadow-sm">
+        
+        {/* Filter dan pencarian */}
+        <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
           <div className="flex flex-col md:flex-row gap-3">
             <div className="relative flex-grow">
-              <Search className="absolute left-3 top-3 text-gray-400 h-4 w-4" />
+              <Search className="absolute left-3 top-3 text-black h-4 w-4" />
               <Input
                 placeholder="Cari tempat sampah..."
-                className="pl-10"
+                className="pl-10 text-black placeholder:text-gray-400"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
             </div>
-            <Button 
-              variant="outline" 
-              className="border-green-200 text-green-800"
-              onClick={fetchBins}
-            >
-              <RefreshCcw className="w-4 h-4 mr-2" />
-              Perbarui
-            </Button>
+            <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+              <Select 
+                value={sort} 
+                onValueChange={(value) => setSort(value as 'name' | 'fillLevel' | 'lastUpdated')}
+              >
+                <SelectTrigger className="sm:w-[180px] text-black bg-white border border-gray-200" style={{backgroundColor: 'white', backdropFilter: 'none'}}>
+                  <ListFilter className="w-4 h-4 mr-2 text-black" />
+                  <span>Urutkan</span>
+                </SelectTrigger>
+                <SelectContent className="bg-white border border-gray-200 shadow-lg" style={{backgroundColor: 'white', backdropFilter: 'none'}}>
+                  <SelectItem value="name" className="text-black">Nama (A-Z)</SelectItem>
+                  <SelectItem value="fillLevel" className="text-black">Level Pengisian</SelectItem>
+                  <SelectItem value="lastUpdated" className="text-black">Terakhir Diperbarui</SelectItem>
+                </SelectContent>
+              </Select>
+              <Button 
+                variant="outline" 
+                className="border-green-200 text-green-800 hover:bg-green-50 bg-white"
+                onClick={fetchBins}
+              >
+                <RefreshCcw className="w-4 h-4 mr-2" />
+                Perbarui
+              </Button>
+            </div>
           </div>
         </div>
-
-        {/* Content */}
-        <Tabs defaultValue="all" className="w-full">
-          <TabsList className="w-full max-w-md mb-4">
-            <TabsTrigger value="all" className="flex-1">Semua</TabsTrigger>
-            <TabsTrigger value="low" className="flex-1">Rendah</TabsTrigger>
-            <TabsTrigger value="medium" className="flex-1">Sedang</TabsTrigger>
-            <TabsTrigger value="full" className="flex-1">Penuh</TabsTrigger>
+        
+        {/* Tab filter berdasarkan level */}
+        <Tabs 
+          value={activeFilter} 
+          onValueChange={(value) => setActiveFilter(value as 'all' | 'low' | 'medium' | 'high')}
+          className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden"
+        >
+          <TabsList className="w-full grid grid-cols-2 sm:grid-cols-4 h-12 bg-gray-50 rounded-none p-0 border-b border-gray-200">
+            <TabsTrigger 
+              value="all" 
+              className="rounded-none py-3 text-sm font-medium text-gray-600 transition-all
+              data-[state=active]:bg-white data-[state=active]:text-green-700 data-[state=active]:border-b-[3px] data-[state=active]:border-green-700 data-[state=active]:shadow-[inset_0_-1px_0_0_white]
+              hover:bg-gray-100 hover:text-green-600"
+            >
+              Semua
+            </TabsTrigger>
+            <TabsTrigger 
+              value="low" 
+              className="rounded-none py-3 text-sm font-medium text-gray-600 transition-all
+              data-[state=active]:bg-white data-[state=active]:text-emerald-700 data-[state=active]:border-b-[3px] data-[state=active]:border-emerald-700 data-[state=active]:shadow-[inset_0_-1px_0_0_white]
+              hover:bg-gray-100 hover:text-emerald-600"
+            >
+              Rendah
+              <span className="hidden sm:inline"> (0-30%)</span>
+            </TabsTrigger>
+            <TabsTrigger 
+              value="medium" 
+              className="rounded-none py-3 text-sm font-medium text-gray-600 transition-all
+              data-[state=active]:bg-white data-[state=active]:text-amber-700 data-[state=active]:border-b-[3px] data-[state=active]:border-amber-700 data-[state=active]:shadow-[inset_0_-1px_0_0_white]
+              hover:bg-gray-100 hover:text-amber-600"
+            >
+              Sedang
+              <span className="hidden sm:inline"> (30-70%)</span>
+            </TabsTrigger>
+            <TabsTrigger 
+              value="high" 
+              className="rounded-none py-3 text-sm font-medium text-gray-600 transition-all
+              data-[state=active]:bg-white data-[state=active]:text-rose-700 data-[state=active]:border-b-[3px] data-[state=active]:border-rose-700 data-[state=active]:shadow-[inset_0_-1px_0_0_white]
+              hover:bg-gray-100 hover:text-rose-600"
+            >
+              Tinggi
+              <span className="hidden sm:inline"> ({'>'}70%)</span>
+            </TabsTrigger>
           </TabsList>
-
-          {/* All Bins Tab */}
-          <TabsContent value="all">
+          
+          <TabsContent value={activeFilter} className="p-4 sm:p-6 mt-6 sm:mt-0">
             {isLoading ? (
-              <div className="flex justify-center p-12">
+              <div className="flex justify-center items-center min-h-[200px]">
                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
               </div>
             ) : filteredBins.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
                 {filteredBins.map((bin) => {
-                  const { status, color } = getBinStatusAndColor(bin.current_capacity, bin.max_capacity);
                   const fillPercentage = Math.round((bin.current_capacity / bin.max_capacity) * 100);
                   
                   return (
-                    <Card key={bin.id} className="overflow-hidden border hover:shadow-md transition-shadow">
-                      <CardHeader className="p-4 bg-gray-50 border-b">
-                        <div className="flex justify-between items-start">
-                          <div>
-                            <CardTitle className="text-lg font-semibold text-black">{bin.name}</CardTitle>
-                            <p className="text-sm text-gray-600">{bin.location}</p>
-                          </div>
-                          <Badge className={`${color}`}>
-                            {status} • {fillPercentage}%
-                          </Badge>
-                        </div>
-                      </CardHeader>
-                      <CardContent className="p-4">
-                        <div className="space-y-4">
-                          <div>
-                            <div className="flex justify-between text-sm mb-1">
-                              <span className="text-gray-600">Kapasitas</span>
-                              <span className="font-medium">{bin.current_capacity}/{bin.max_capacity} liter</span>
-                            </div>
-                            <div className="w-full bg-gray-200 rounded-full h-2.5">
-                              <div 
-                                className={`h-2.5 rounded-full ${fillPercentage < 30 ? 'bg-emerald-500' : fillPercentage < 70 ? 'bg-amber-500' : 'bg-rose-500'}`}
-                                style={{ width: `${fillPercentage}%` }}
-                              ></div>
-                            </div>
-                          </div>
-                          
-                          <div className="flex justify-between items-center text-sm">
-                            <span className="text-gray-600">Terakhir diperbarui</span>
-                            <span>{formatDate(bin.last_updated)}</span>
-                          </div>
-                          
-                          <div className="pt-2">
-                            <Button 
-                              variant="outline" 
-                              className="w-full border-green-200 text-green-800 hover:bg-green-50"
-                              onClick={() => router.push(`/bins/${bin.id}`)}
-                            >
-                              Lihat Detail
-                            </Button>
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  );
-                })}
-              </div>
-            ) : (
-              <div className="text-center py-12 bg-gray-50 rounded-lg border">
-                <Trash className="h-12 w-12 mx-auto text-gray-400 mb-4" />
-                <h3 className="text-lg font-medium text-gray-900">Tidak ada tempat sampah ditemukan</h3>
-                <p className="mt-2 text-gray-600">
-                  {searchQuery ? 'Coba ubah kata kunci pencarian' : 'Belum ada tempat sampah yang ditambahkan'}
-                </p>
-                {user && !searchQuery && (
-                  <Button
-                    onClick={() => router.push('/bins/add')}
-                    className="mt-4 bg-green-700 hover:bg-green-800 text-white"
-                  >
-                    <Plus className="w-4 h-4 mr-2" />
-                    Tambah Tempat Sampah
-                  </Button>
-                )}
-              </div>
-            )}
-          </TabsContent>
-
-          {/* Low Tab */}
-          <TabsContent value="low">
-            {isLoading ? (
-              <div className="flex justify-center p-12">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {filteredBins
-                  .filter(bin => (bin.current_capacity / bin.max_capacity) * 100 < 30)
-                  .map((bin) => {
-                    const fillPercentage = Math.round((bin.current_capacity / bin.max_capacity) * 100);
-                    
-                    return (
-                      <Card key={bin.id} className="overflow-hidden border hover:shadow-md transition-shadow">
-                        <CardHeader className="p-4 bg-gray-50 border-b">
-                          <div className="flex justify-between items-start">
-                            <div>
+                    <Link 
+                      href={`/bins/${bin.id}`}
+                      key={bin.id}
+                    >
+                      <Card className="overflow-hidden hover:shadow-md transition-all border border-gray-200 hover:border-green-200 cursor-pointer h-full">
+                        <CardHeader className="border-b bg-gray-50 p-4">
+                          <div className="flex justify-between">
+                            <div className="space-y-1">
                               <CardTitle className="text-lg font-semibold text-black">{bin.name}</CardTitle>
-                              <p className="text-sm text-gray-600">{bin.location}</p>
+                              <p className="text-sm text-black">{bin.location || "Auto-created location"}</p>
                             </div>
-                            <Badge className="bg-emerald-100 text-emerald-800 border-emerald-300">
-                              Rendah • {fillPercentage}%
+                            <Badge className={`${getStatusBadgeClass(fillPercentage)} hover:shadow-md transition-all hover:scale-105 cursor-pointer`}>
+                              {getStatusText(fillPercentage)} • {fillPercentage}%
                             </Badge>
                           </div>
                         </CardHeader>
                         <CardContent className="p-4">
-                          <div className="space-y-4">
+                          <div className="space-y-3">
                             <div>
-                              <div className="flex justify-between text-sm mb-1">
-                                <span className="text-gray-600">Kapasitas</span>
-                                <span className="font-medium">{bin.current_capacity}/{bin.max_capacity} liter</span>
-                              </div>
-                              <div className="w-full bg-gray-200 rounded-full h-2.5">
-                                <div 
-                                  className="h-2.5 rounded-full bg-emerald-500"
+                              <p className="text-sm text-black mb-1 flex justify-between">
+                                <span>Level Pengisian</span>
+                                <span className="font-medium">{fillPercentage}%</span>
+                              </p>
+                              <div className="w-full bg-gray-200 rounded-full h-2">
+                                <div
+                                  className={`h-2 rounded-full ${
+                                    fillPercentage < 30
+                                      ? 'bg-emerald-500'
+                                      : fillPercentage < 70
+                                      ? 'bg-amber-500'
+                                      : 'bg-rose-500'
+                                  }`}
                                   style={{ width: `${fillPercentage}%` }}
                                 ></div>
                               </div>
                             </div>
                             
-                            <div className="flex justify-between items-center text-sm">
-                              <span className="text-gray-600">Terakhir diperbarui</span>
-                              <span>{formatDate(bin.last_updated)}</span>
-                            </div>
-                            
-                            <div className="pt-2">
-                              <Button 
-                                variant="outline" 
-                                className="w-full border-green-200 text-green-800 hover:bg-green-50"
-                                onClick={() => router.push(`/bins/${bin.id}`)}
-                              >
-                                Lihat Detail
-                              </Button>
+                            <div className="flex items-center justify-between text-sm mt-2">
+                              <span className="text-black">Terakhir diperbarui:</span>
+                              <span className="font-medium">
+                                {formatDate(bin.last_updated)}
+                              </span>
                             </div>
                           </div>
                         </CardContent>
                       </Card>
-                    );
-                  })}
+                    </Link>
+                  );
+                })}
+              </div>
+            ) : (
+              <div className="text-center py-12 text-black">
+                <Gauge className="h-12 w-12 mx-auto text-gray-400 mb-3" />
+                <h3 className="text-lg font-medium text-gray-900">Tidak ada tempat sampah ditemukan</h3>
+                <p className="mt-1 text-sm">
+                  {searchQuery 
+                    ? 'Coba ubah kata kunci pencarian Anda' 
+                    : activeFilter !== 'all' 
+                      ? 'Tidak ada tempat sampah dengan level ini'
+                      : 'Tambahkan tempat sampah pertama Anda'}
+                </p>
+                {activeFilter === 'all' && !searchQuery && (
+                  <Button 
+                    asChild
+                    className="mt-4 bg-green-700 hover:bg-green-800 text-white"
+                  >
+                    <Link href="/bins/add">
+                      <Plus className="w-4 h-4 mr-2" />
+                      Tambah Tempat Sampah
+                    </Link>
+                  </Button>
+                )}
               </div>
             )}
-          </TabsContent>
-
-          {/* Medium Tab */}
-          <TabsContent value="medium">
-            {/* Konten untuk tab Medium, sama seperti Low dengan filter berbeda */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {filteredBins
-                .filter(bin => {
-                  const percent = (bin.current_capacity / bin.max_capacity) * 100;
-                  return percent >= 30 && percent < 70;
-                })
-                .map((bin) => {
-                  const fillPercentage = Math.round((bin.current_capacity / bin.max_capacity) * 100);
-                  
-                  return (
-                    <Card key={bin.id} className="overflow-hidden border hover:shadow-md transition-shadow">
-                      <CardHeader className="p-4 bg-gray-50 border-b">
-                        <div className="flex justify-between items-start">
-                          <div>
-                            <CardTitle className="text-lg font-semibold text-black">{bin.name}</CardTitle>
-                            <p className="text-sm text-gray-600">{bin.location}</p>
-                          </div>
-                          <Badge className="bg-amber-100 text-amber-800 border-amber-300">
-                            Sedang • {fillPercentage}%
-                          </Badge>
-                        </div>
-                      </CardHeader>
-                      <CardContent className="p-4">
-                        {/* Konten sama seperti tab lain */}
-                        <div className="space-y-4">
-                          <div>
-                            <div className="flex justify-between text-sm mb-1">
-                              <span className="text-gray-600">Kapasitas</span>
-                              <span className="font-medium">{bin.current_capacity}/{bin.max_capacity} liter</span>
-                            </div>
-                            <div className="w-full bg-gray-200 rounded-full h-2.5">
-                              <div 
-                                className="h-2.5 rounded-full bg-amber-500"
-                                style={{ width: `${fillPercentage}%` }}
-                              ></div>
-                            </div>
-                          </div>
-                          
-                          <div className="flex justify-between items-center text-sm">
-                            <span className="text-gray-600">Terakhir diperbarui</span>
-                            <span>{formatDate(bin.last_updated)}</span>
-                          </div>
-                          
-                          <div className="pt-2">
-                            <Button 
-                              variant="outline" 
-                              className="w-full border-green-200 text-green-800 hover:bg-green-50"
-                              onClick={() => router.push(`/bins/${bin.id}`)}
-                            >
-                              Lihat Detail
-                            </Button>
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  );
-                })}
-            </div>
-          </TabsContent>
-
-          {/* Full Tab */}
-          <TabsContent value="full">
-            {/* Konten untuk tab Full, sama seperti Low dengan filter berbeda */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {filteredBins
-                .filter(bin => (bin.current_capacity / bin.max_capacity) * 100 >= 70)
-                .map((bin) => {
-                  const fillPercentage = Math.round((bin.current_capacity / bin.max_capacity) * 100);
-                  
-                  return (
-                    <Card key={bin.id} className="overflow-hidden border hover:shadow-md transition-shadow">
-                      <CardHeader className="p-4 bg-gray-50 border-b">
-                        <div className="flex justify-between items-start">
-                          <div>
-                            <CardTitle className="text-lg font-semibold text-black">{bin.name}</CardTitle>
-                            <p className="text-sm text-gray-600">{bin.location}</p>
-                          </div>
-                          <Badge className="bg-rose-100 text-rose-800 border-rose-300">
-                            Penuh • {fillPercentage}%
-                          </Badge>
-                        </div>
-                      </CardHeader>
-                      <CardContent className="p-4">
-                        {/* Konten sama seperti tab lain */}
-                        <div className="space-y-4">
-                          <div>
-                            <div className="flex justify-between text-sm mb-1">
-                              <span className="text-gray-600">Kapasitas</span>
-                              <span className="font-medium">{bin.current_capacity}/{bin.max_capacity} liter</span>
-                            </div>
-                            <div className="w-full bg-gray-200 rounded-full h-2.5">
-                              <div 
-                                className="h-2.5 rounded-full bg-rose-500"
-                                style={{ width: `${fillPercentage}%` }}
-                              ></div>
-                            </div>
-                          </div>
-                          
-                          <div className="flex justify-between items-center text-sm">
-                            <span className="text-gray-600">Terakhir diperbarui</span>
-                            <span>{formatDate(bin.last_updated)}</span>
-                          </div>
-                          
-                          <div className="pt-2">
-                            <Button 
-                              variant="outline" 
-                              className="w-full border-green-200 text-green-800 hover:bg-green-50"
-                              onClick={() => router.push(`/bins/${bin.id}`)}
-                            >
-                              Lihat Detail
-                            </Button>
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  );
-                })}
-            </div>
           </TabsContent>
         </Tabs>
       </div>
