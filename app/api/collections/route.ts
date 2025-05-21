@@ -22,9 +22,11 @@ async function getSupabaseClient() {
         get(name: string) {
           return cookieStore.get(name)?.value;
         },
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         set(name: string, value: string, options: Record<string, any>) {
           cookieStore.set({ name, value, ...options });
         },
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         remove(name: string, options: Record<string, any>) {
           cookieStore.set({ name, value: '', ...options });
         },
@@ -34,6 +36,7 @@ async function getSupabaseClient() {
 }
 
 // Helper for error responses
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function createErrorResponse(message: string, details: any, status = 500) {
   return NextResponse.json(
     { error: message, details },
@@ -42,6 +45,7 @@ function createErrorResponse(message: string, details: any, status = 500) {
 }
 
 // Helper for success responses
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function createSuccessResponse(data: any, message?: string, status = 200) {
   return NextResponse.json(
     { success: true, data, ...(message && { message }) },

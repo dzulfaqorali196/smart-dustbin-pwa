@@ -1,0 +1,21 @@
+# Dependencies
+node_modules
+
+# Build artifacts
+.next
+out
+build
+dist
+
+# Cache
+.swc
+.turbo
+
+# Environment variables
+.env*
+!.env.example
+!.env.template
+
+# Misc
+.DS_Store
+*.pem 
