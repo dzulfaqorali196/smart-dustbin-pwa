@@ -63,15 +63,17 @@ export async function POST(req: NextRequest) {
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
       {
         cookies: {
-          get(name: string) {
-            return cookieStore.get(name)?.value
+          getAll: () => {
+            return cookieStore.getAll().map((cookie) => ({
+              name: cookie.name,
+              value: cookie.value
+            }))
           },
-          set(name: string, value: string, options: Record<string, any>) {
-            cookieStore.set({ name, value, ...options })
-          },
-          remove(name: string, options: Record<string, any>) {
-            cookieStore.set({ name, value: '', ...options })
-          },
+          setAll: (cookies) => {
+            cookies.forEach(({ name, value, options }) => {
+              cookieStore.set({ name, value, ...options })
+            })
+          }
         },
       }
     );
@@ -102,7 +104,7 @@ export async function POST(req: NextRequest) {
         .from('alerts')
         .select('id')
         .eq('bin_id', bin_id)
-        .in('status', ['pending', 'acknowledged'])
+        .in('status', ['OPEN', 'ACKNOWLEDGED'])
         .single();
       
       if (fetchError && fetchError.code !== 'PGRST116') { // Not found error is ok
@@ -111,15 +113,15 @@ export async function POST(req: NextRequest) {
       
       // Only create new alert if no active alert exists
       if (!existingAlert) {
-        const alertType = fill_level > 90 ? 'capacity_critical' : 'capacity_warning';
+        const alertType = fill_level > 90 ? 'FULL' : 'FULL';
         
         const { error: alertError } = await supabase
           .from('alerts')
           .insert({
             bin_id,
             alert_type: alertType,
-            priority: 'high',
-            status: 'pending',
+            priority: 'HIGH',
+            status: 'OPEN',
             created_at: new Date().toISOString()
           });
           
