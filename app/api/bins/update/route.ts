@@ -3,6 +3,7 @@ import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export async function OPTIONS(req: NextRequest) {
   return new NextResponse(null, {
     status: 204,
@@ -69,9 +70,11 @@ export async function POST(req: NextRequest) {
           get(name: string) {
             return cookieStore.get(name)?.value
           },
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           set(name: string, value: string, options: Record<string, any>) {
             cookieStore.set({ name, value, ...options })
           },
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           remove(name: string, options: Record<string, any>) {
             cookieStore.set({ name, value: '', ...options })
           },
@@ -80,10 +83,12 @@ export async function POST(req: NextRequest) {
     );
     
     // Tampilkan semua bin yang ada di database (untuk debugging)
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { data: allBins, error: listError } = await supabase.from('bins').select('id');
     // console.log("All bins in database:", allBins);
     
     // Cari bin dengan ID yang diberikan
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { data: existingBin, error: findError } = await supabase
       .from('bins')
       .select('id')
@@ -202,6 +207,7 @@ export async function POST(req: NextRequest) {
       headers: responseHeaders
     });
     
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     console.error('Error in bin update:', error);
     return NextResponse.json({ 
