@@ -1,7 +1,7 @@
-import { create } from 'zustand';
 import { supabase } from '@/lib/supabase/client';
 import { User } from '@supabase/supabase-js';
 import { toast } from 'sonner';
+import { create } from 'zustand';
 
 interface AuthState {
   user: User | null;
@@ -230,21 +230,21 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   checkSession: async () => {
     set({ isLoading: true });
     try {
-      const { data } = await supabase.auth.getSession();
-      const { data: userData } = await supabase.auth.getUser();
+      const { data: { session } } = await supabase.auth.getSession();
+      const { data: { user } } = await supabase.auth.getUser();
       
-      if (userData?.user) {
+      if (user) {
         // Coba ambil data profil kustom dari tabel profiles
         const { data: profileData } = await supabase
           .from('profiles')
           .select('*')
-          .eq('id', userData.user.id)
+          .eq('id', user.id)
           .single();
         
         // Jika ada profil kustom, gunakan data dari sana untuk override metadata
         if (profileData) {
           // Buat salinan user untuk dimodifikasi
-          const userWithCustomProfile = { ...userData.user };
+          const userWithCustomProfile = { ...user };
           // Override metadata dengan data dari profil kustom
           userWithCustomProfile.user_metadata = {
             ...userWithCustomProfile.user_metadata,
@@ -261,7 +261,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       }
       
       set({ 
-        user: userData?.user || null,
+        user: user || null,
         isLoading: false 
       });
     } catch (error: any) {

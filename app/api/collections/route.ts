@@ -1,9 +1,9 @@
 import { Database } from '@/types/supabase';
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
+import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
 
-// Handler untuk OPTIONS request (CORS pre-flight)
+// Handler for OPTIONS request (CORS pre-flight)
 export async function OPTIONS() {
   return new NextResponse(null, {
     status: 204,
@@ -16,14 +16,14 @@ export async function OPTIONS() {
   });
 }
 
-// Handler untuk GET request (testing only)
+// Handler for GET request (testing only)
 export async function GET() {
   return NextResponse.json({
     message: 'Endpoint aktif! Gunakan metode POST untuk mengirim data dari ESP8266.'
   });
 }
 
-// Handler untuk POST request (main functionality)
+// Handler for POST request (main functionality)
 export async function POST(req: NextRequest) {
   try {
     // Handle CORS
@@ -34,12 +34,12 @@ export async function POST(req: NextRequest) {
       'Access-Control-Allow-Headers': 'Content-Type, Authorization',
     };
 
-    // Menerima data dari ESP8266
+    // Receive data from ESP8266
     const { bin_id, fill_level, latitude, longitude, api_key } = await req.json();
     
     console.log("Received data:", { bin_id, fill_level, latitude, longitude });
     
-    // Validasi input
+    // Validate input
     if (!bin_id || fill_level === undefined || !api_key) {
       return NextResponse.json({ error: 'Parameter tidak lengkap' }, { 
         status: 400,
@@ -47,7 +47,7 @@ export async function POST(req: NextRequest) {
       });
     }
     
-    // Validasi API key
+    // Validate API key
     const API_KEY = process.env.IOT_API_KEY || 'smart-dustbin-secret-key';
     if (api_key !== API_KEY) {
       return NextResponse.json({ error: 'API key tidak valid' }, { 
@@ -56,11 +56,27 @@ export async function POST(req: NextRequest) {
       });
     }
     
-    // Koneksi ke Supabase
-    const cookieStore = cookies();
-    const supabase = createRouteHandlerClient<Database>({ cookies: () => cookieStore });
+    // Connect to Supabase
+    const cookieStore = await cookies();
+    const supabase = createServerClient<Database>(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        cookies: {
+          get(name: string) {
+            return cookieStore.get(name)?.value
+          },
+          set(name: string, value: string, options: Record<string, any>) {
+            cookieStore.set({ name, value, ...options })
+          },
+          remove(name: string, options: Record<string, any>) {
+            cookieStore.set({ name, value: '', ...options })
+          },
+        },
+      }
+    );
     
-    // Perbarui data tempat sampah
+    // Update bin data
     const { data, error } = await supabase
       .from('bins')
       .update({
@@ -80,21 +96,36 @@ export async function POST(req: NextRequest) {
       });
     }
     
-    // Buat alert jika level tinggi
     if (fill_level > 80) {
-      const { error: alertError } = await supabase
+      // Check if there's already an active alert for this bin
+      const { data: existingAlert, error: fetchError } = await supabase
         .from('alerts')
-        .insert({
-          bin_id,
-          alert_type: 'FULL',
-          priority: 'HIGH',
-          status: 'OPEN',
-          created_at: new Date().toISOString()
-        })
-        .select();
+        .select('id')
+        .eq('bin_id', bin_id)
+        .in('status', ['pending', 'acknowledged'])
+        .single();
+      
+      if (fetchError && fetchError.code !== 'PGRST116') { // Not found error is ok
+        console.error('Error checking existing alerts:', fetchError);
+      } 
+      
+      // Only create new alert if no active alert exists
+      if (!existingAlert) {
+        const alertType = fill_level > 90 ? 'capacity_critical' : 'capacity_warning';
         
-      if (alertError) {
-        console.error('Error creating alert:', alertError);
+        const { error: alertError } = await supabase
+          .from('alerts')
+          .insert({
+            bin_id,
+            alert_type: alertType,
+            priority: 'high',
+            status: 'pending',
+            created_at: new Date().toISOString()
+          });
+          
+        if (alertError) {
+          console.error('Error creating alert:', alertError);
+        }
       }
     }
     

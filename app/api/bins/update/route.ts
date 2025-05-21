@@ -1,53 +1,145 @@
 import { Database } from '@/types/supabase';
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
+import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
 
+export async function OPTIONS(req: NextRequest) {
+  return new NextResponse(null, {
+    status: 204,
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+      'Access-Control-Max-Age': '86400',
+    },
+  });
+}
+
+export async function GET() {
+  return NextResponse.json({
+    message: 'Endpoint aktif! Gunakan metode POST untuk mengirim data dari ESP8266.'
+  });
+}
+
 export async function POST(req: NextRequest) {
   try {
+    // Handle CORS
+    const origin = req.headers.get('origin') || '*';
+    const responseHeaders = {
+      'Access-Control-Allow-Origin': origin,
+      'Access-Control-Allow-Methods': 'POST, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+    };
+
     // Menerima data dari ESP8266
     const { bin_id, fill_level, latitude, longitude, api_key } = await req.json();
     
-    console.log("Received data:", { bin_id, fill_level, latitude, longitude });
-    console.log("Type of bin_id:", typeof bin_id); // Check data type
-    
+    // console.log("Received data from sensor:", { 
+    //   bin_id, 
+    //   fill_level, 
+    //   latitude, 
+    //   longitude,
+    //   timestamp: new Date().toISOString()
+    // });
+
     // Validasi input
     if (!bin_id || fill_level === undefined || !api_key) {
-      return NextResponse.json({ error: 'Parameter tidak lengkap' }, { status: 400 });
+      return NextResponse.json({ error: 'Parameter tidak lengkap' }, { 
+        status: 400,
+        headers: responseHeaders
+      });
     }
     
     // Validasi API key
     const API_KEY = process.env.IOT_API_KEY || 'smart-dustbin-secret-key';
     if (api_key !== API_KEY) {
-      return NextResponse.json({ error: 'API key tidak valid' }, { status: 401 });
+      return NextResponse.json({ error: 'API key tidak valid' }, { 
+        status: 401,
+        headers: responseHeaders
+      });
     }
     
     // Koneksi ke Supabase
-    const cookieStore = cookies();
-    const supabase = createRouteHandlerClient<Database>({ cookies: () => cookieStore });
+    const cookieStore = await cookies();
+    const supabase = createServerClient<Database>(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        cookies: {
+          get(name: string) {
+            return cookieStore.get(name)?.value
+          },
+          set(name: string, value: string, options: Record<string, any>) {
+            cookieStore.set({ name, value, ...options })
+          },
+          remove(name: string, options: Record<string, any>) {
+            cookieStore.set({ name, value: '', ...options })
+          },
+        },
+      }
+    );
     
     // Tampilkan semua bin yang ada di database (untuk debugging)
-    const { data: allBins } = await supabase.from('bins').select('id');
-    console.log("All bins in database:", allBins);
+    const { data: allBins, error: listError } = await supabase.from('bins').select('id');
+    // console.log("All bins in database:", allBins);
     
     // Cari bin dengan ID yang diberikan
-    const { error: findError } = await supabase
+    const { data: existingBin, error: findError } = await supabase
       .from('bins')
       .select('id')
       .eq('id', bin_id)
       .single();
+    
+    // Jika bin tidak ditemukan, buat baru
+    if (findError && findError.code === 'PGRST116') {
+      // console.log(`Bin with ID ${bin_id} not found, creating new bin.`);
+      const { data: newBin, error: insertError } = await supabase
+        .from('bins')
+        .insert({
+          id: bin_id,
+          name: `Bin #${bin_id}`,
+          location: 'Auto-created location',
+          max_capacity: 100,
+          current_capacity: fill_level,
+          status: 'ACTIVE',
+          latitude: latitude || null,
+          longitude: longitude || null,
+          last_updated: new Date().toISOString()
+        })
+        .select();
+        
+      if (insertError) {
+        console.error('Error creating new bin:', insertError);
+        return NextResponse.json({ 
+          error: 'Gagal membuat tempat sampah baru', 
+          details: insertError 
+        }, { 
+          status: 500,
+          headers: responseHeaders
+        });
+      }
       
-    if (findError) {
-      console.error('Error finding bin:', findError);
       return NextResponse.json({ 
-        error: 'Tempat sampah tidak ditemukan', 
+        success: true, 
+        data: newBin,
+        message: 'Tempat sampah baru dibuat' 
+      }, {
+        headers: responseHeaders
+      });
+    } else if (findError) {
+      console.error('Unexpected error finding bin:', findError);
+      return NextResponse.json({ 
+        error: 'Terjadi kesalahan saat mencari tempat sampah', 
         details: findError,
         requestedId: bin_id,
         availableIds: allBins?.map(bin => bin.id)
-      }, { status: 404 });
+      }, { 
+        status: 500,
+        headers: responseHeaders
+      });
     }
     
-    // Perbarui data tempat sampah
+    // Update bin data
     const { data, error } = await supabase
       .from('bins')
       .update({
@@ -61,10 +153,13 @@ export async function POST(req: NextRequest) {
       
     if (error) {
       console.error('Error updating bin:', error);
-      return NextResponse.json({ error: 'Gagal memperbarui data' }, { status: 500 });
+      return NextResponse.json({ error: 'Gagal memperbarui data' }, { 
+        status: 500,
+        headers: responseHeaders
+      });
     }
     
-    // Jika kapasitas melebihi ambang tertentu, buat alert
+    // Create alert if capacity is high
     if (fill_level > 80) {
       // Cek apakah sudah ada alert aktif untuk tempat sampah ini
       const { data: existingAlert } = await supabase
@@ -96,21 +191,23 @@ export async function POST(req: NextRequest) {
       success: true, 
       data,
       message: 'Data berhasil diperbarui' 
+    }, { 
+      status: 200,
+      headers: responseHeaders
     });
     
-  } catch (error: unknown) {
+  } catch (error: any) {
     console.error('Error in bin update:', error);
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     return NextResponse.json({ 
       error: 'Terjadi kesalahan server', 
-      details: errorMessage 
-    }, { status: 500 });
+      details: error.message 
+    }, { 
+      status: 500,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'POST, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+      }
+    });
   }
-}
-
-// Test endpoint - GET method hanya untuk verifikasi
-export async function GET() {
-  return NextResponse.json({
-    message: 'Endpoint aktif! Gunakan metode POST untuk mengirim data dari ESP8266.'
-  });
 }
