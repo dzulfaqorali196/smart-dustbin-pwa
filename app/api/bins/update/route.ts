@@ -161,23 +161,29 @@ export async function POST(req: NextRequest) {
     
     // Create alert if capacity is high
     if (fill_level > 80) {
-      // Cek apakah sudah ada alert aktif untuk tempat sampah ini
-      const { data: existingAlert } = await supabase
+      // Check if there's already an active alert for this bin
+      const { data: existingAlert, error: fetchError } = await supabase
         .from('alerts')
         .select('id')
         .eq('bin_id', bin_id)
-        .eq('status', 'OPEN')
+        .in('status', ['pending', 'acknowledged'])
         .single();
       
-      // Jika belum ada alert aktif, buat yang baru
+      if (fetchError && fetchError.code !== 'PGRST116') { // Not found error is ok
+        console.error('Error checking existing alerts:', fetchError);
+      } 
+      
+      // Only create new alert if no active alert exists
       if (!existingAlert) {
+        const alertType = fill_level > 90 ? 'capacity_critical' : 'capacity_warning';
+        
         const { error: alertError } = await supabase
           .from('alerts')
           .insert({
             bin_id,
-            alert_type: 'FULL',
-            priority: 'HIGH',
-            status: 'OPEN',
+            alert_type: alertType,
+            priority: 'high',
+            status: 'pending',
             created_at: new Date().toISOString()
           });
           
