@@ -12,7 +12,7 @@ export default function BinCard({ bin, onClick }: BinCardProps) {
       className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md hover:shadow-lg transition-shadow cursor-pointer"
       onClick={onClick}
     >
-      <h3 className="font-bold text-black">{bin.name}</h3>
+      <h3 className="font-bold text-white">{bin.name}</h3>
       <p className="text-sm text-gray-500 dark:text-gray-400">{bin.location}</p>
       
       <div className="mt-3">
