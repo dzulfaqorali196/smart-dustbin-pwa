@@ -1,0 +1,34 @@
+/* Fix untuk marker Leaflet default */
+.leaflet-marker-icon {
+  margin-left: -12px !important;
+  margin-top: -41px !important;
+}
+
+.leaflet-popup-content {
+  margin: 8px 12px !important;
+  line-height: 1.4 !important;
+  font-size: 13px !important;
+}
+
+.leaflet-popup-content-wrapper {
+  border-radius: 8px !important;
+  box-shadow: 0 3px 14px rgba(0,0,0,0.4) !important;
+}
+
+/* Custom marker styles */
+.custom-marker {
+  background-color: #22c55e;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 2px solid white;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.custom-marker.orange {
+  background-color: #f59e0b;
+}
+
+.custom-marker.red {
+  background-color: #ef4444;
+}

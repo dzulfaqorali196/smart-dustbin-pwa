@@ -1,9 +1,9 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { FormattedBin, getAllBins, subscribeToBinsUpdates } from '@/lib/api/bins';
-import BinCard from './bin-card';
 import { Skeleton } from '@/components/ui/skeleton';
+import { FormattedBin, getAllBins, subscribeToBinsUpdates } from '@/lib/api/bins';
+import { useEffect, useState } from 'react';
+import BinCard from './bin-card';
 
 interface BinListProps {
   onSelectBin?: (bin: FormattedBin) => void;

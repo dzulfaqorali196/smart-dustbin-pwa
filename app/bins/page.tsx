@@ -1,22 +1,22 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { useRouter } from 'next/navigation';
-import { supabase } from '@/lib/supabase/client';
-import { Trash, Plus, Search, RefreshCcw, ChevronLeft, Home, Gauge, ListFilter } from 'lucide-react';
-import { useAuthStore } from '@/store/auth-store';
-import Link from 'next/link';
-import { 
-  Select, 
-  SelectContent, 
-  SelectItem, 
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
   SelectTrigger
 } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { supabase } from '@/lib/supabase/client';
+import { useAuthStore } from '@/store/auth-store';
+import { ChevronLeft, Gauge, Home, ListFilter, Plus, RefreshCcw, Search } from 'lucide-react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
 interface Bin {
   id: string;
@@ -321,7 +321,7 @@ export default function BinsPage() {
                             
                             <div className="flex items-center justify-between text-sm mt-2">
                               <span className="text-black">Terakhir diperbarui:</span>
-                              <span className="font-medium">
+                              <span className="font-medium text-gray-800">
                                 {formatDate(bin.last_updated)}
                               </span>
                             </div>

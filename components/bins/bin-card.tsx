@@ -1,19 +1,18 @@
 import { FormattedBin } from '@/lib/api/bins';
-import CapacityIndicator from './capacity-indicator';
 import { motion } from 'framer-motion';
+import CapacityIndicator from './capacity-indicator';
 
 interface BinCardProps {
   bin: FormattedBin;
   onClick?: () => void;
 }
 
-export default function BinCard({ bin, onClick }: BinCardProps) {
+export default function BinCard({ bin }: BinCardProps) {
   return (
     <motion.div 
-      whileHover={{ scale: 1.01 }}
+      whileHover={{ scale: 1.1 }}
       transition={{ type: "spring", stiffness: 400, damping: 10 }}
-      className="bg-white dark:bg-gray-800 p-3 sm:p-4 rounded-lg shadow hover:shadow-md transition-all cursor-pointer border border-gray-100 dark:border-gray-700"
-      onClick={onClick}
+      className="bg-white dark:bg-gray-800 p-3 sm:p-4 rounded-lg shadow hover:shadow-md transition-all border border-gray-100 dark:border-gray-700"
     >
       <div className="flex items-start justify-between">
         <div>

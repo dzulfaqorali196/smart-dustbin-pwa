@@ -5,13 +5,11 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useAuthStore } from '@/store/auth-store';
 import { FormattedBin, getAllBins, subscribeToBinsUpdates } from '@/lib/api/bins';
+import { useAuthStore } from '@/store/auth-store';
 import { motion } from "framer-motion";
-import { Suspense, useEffect, useState } from 'react';
 import Link from 'next/link';
-
-// Data bins sekarang menggunakan API
+import { Suspense, useEffect, useState } from 'react';
 
 function DashboardContent() {
   const { user } = useAuthStore();

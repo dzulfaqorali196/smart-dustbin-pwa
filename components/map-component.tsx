@@ -1,9 +1,9 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
 import L from 'leaflet';
-import { useRouter } from 'next/navigation';
 import 'leaflet/dist/leaflet.css';
+import { useRouter } from 'next/navigation';
+import { useEffect, useRef } from 'react';
 
 // Definisikan tipe untuk data tempat sampah
 interface Bin {
@@ -49,6 +49,8 @@ export default function MapComponent({ bins, center, mapKey }: MapComponentProps
   useEffect(() => {
     if (typeof window === 'undefined') return;
     
+    console.log('Initializing map with bins:', bins); // Debug log
+    
     // Cleanup peta sebelumnya jika ada
     if (mapRef.current) {
       mapRef.current.remove();
@@ -57,7 +59,7 @@ export default function MapComponent({ bins, center, mapKey }: MapComponentProps
     
     // Buat peta baru jika container ada
     if (mapContainerRef.current && !mapRef.current) {
-      const map = L.map(mapContainerRef.current).setView(center, 17);
+      const map = L.map(mapContainerRef.current).setView(center, 15);
       
       // Menggunakan peta dengan warna yang lebih kontras dari Stamen
       L.tileLayer(`https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.png${process.env.NEXT_PUBLIC_STADIA_MAPS_API_KEY ? `?api_key=${process.env.NEXT_PUBLIC_STADIA_MAPS_API_KEY}` : ''}`, {
@@ -66,20 +68,57 @@ export default function MapComponent({ bins, center, mapKey }: MapComponentProps
       }).addTo(map);
       
       // Tambahkan marker untuk setiap tempat sampah
-      bins.forEach(bin => {
+      bins.forEach((bin, index) => {
+        console.log(`Adding marker ${index + 1} for bin:`, bin); // Debug log
+        
+        // Validasi koordinat
+        if (!bin.latitude || !bin.longitude || isNaN(bin.latitude) || isNaN(bin.longitude)) {
+          console.warn(`Invalid coordinates for bin ${bin.id}:`, { lat: bin.latitude, lng: bin.longitude });
+          return;
+        }
+        
         const fillPercentage = calculateFillPercentage(bin.current_capacity, bin.max_capacity);
         const markerColor = getMarkerColor(bin.current_capacity, bin.max_capacity);
         
-        const binIcon = L.icon({
-          iconUrl: `/img/bin-${markerColor}.svg`,
-          iconSize: [36, 36], // Ukuran lebih besar untuk visibilitas
-          iconAnchor: [18, 36],
-          popupAnchor: [0, -36]
+        // Gunakan circle marker dengan warna yang sesuai
+        const circleColor = markerColor === 'green' ? '#059669' : markerColor === 'orange' ? '#D97706' : '#DC2626';
+        const fillColor = markerColor === 'green' ? '#10B981' : markerColor === 'orange' ? '#F59E0B' : '#EF4444';
+        
+        const marker = L.circleMarker([Number(bin.latitude), Number(bin.longitude)], {
+          radius: 12,
+          fillColor: fillColor,
+          color: circleColor,
+          weight: 3,
+          opacity: 1,
+          fillOpacity: 0.8
+        }).addTo(map);
+        
+        // Tambahkan label di tengah circle
+        const divIcon = L.divIcon({
+          className: 'custom-div-icon',
+          html: `<div style="
+            width: 24px; 
+            height: 24px; 
+            background-color: ${fillColor}; 
+            border: 3px solid ${circleColor}; 
+            border-radius: 50%; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            font-weight: bold; 
+            font-size: 10px; 
+            color: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+          ">${fillPercentage}%</div>`,
+          iconSize: [24, 24],
+          iconAnchor: [12, 12]
         });
         
-        const marker = L.marker([Number(bin.latitude), Number(bin.longitude)], {
-          icon: binIcon
+        const percentageMarker = L.marker([Number(bin.latitude), Number(bin.longitude)], {
+          icon: divIcon
         }).addTo(map);
+        
+        console.log(`Marker added at coordinates:`, [Number(bin.latitude), Number(bin.longitude)]);
         
         // Buat konten popup dengan kontras tinggi
         const popupContent = document.createElement('div');
@@ -173,13 +212,22 @@ export default function MapComponent({ bins, center, mapKey }: MapComponentProps
         };
         popupContent.appendChild(detailButton);
         
-        marker.bindPopup(L.popup({
+        percentageMarker.bindPopup(L.popup({
           maxWidth: 300,
           className: 'custom-popup',
         }).setContent(popupContent));
       });
       
+      // Set bounds untuk menampilkan semua marker jika ada lebih dari satu
+      if (bins.length > 1) {
+        const group = new L.FeatureGroup(
+          bins.map(bin => L.marker([Number(bin.latitude), Number(bin.longitude)]))
+        );
+        map.fitBounds(group.getBounds().pad(0.1));
+      }
+      
       mapRef.current = map;
+      console.log('Map initialized with', bins.length, 'markers');
     }
     
     // Cleanup function - hapus peta ketika komponen unmount
