@@ -10,7 +10,7 @@ interface BinCardProps {
 export default function BinCard({ bin }: BinCardProps) {
   return (
     <motion.div 
-      whileHover={{ scale: 1.1 }}
+      whileHover={{ scale: 1.015 }}
       transition={{ type: "spring", stiffness: 400, damping: 10 }}
       className="bg-white dark:bg-gray-800 p-3 sm:p-4 rounded-lg shadow hover:shadow-md transition-all border border-gray-100 dark:border-gray-700"
     >
