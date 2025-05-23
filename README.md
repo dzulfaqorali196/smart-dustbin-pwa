@@ -2,6 +2,10 @@
 
 Aplikasi Progressive Web App (PWA) untuk sistem monitoring tempat sampah pintar secara real-time.
 
+## Demo
+
+🎥 **Link Demo Aplikasi**: [Demo Smart Dustbin PWA](https://drive.google.com/drive/folders/1GE8xFd7JlY0ff5rnGeNGu1itzs9y4Qqn?usp=sharing)
+
 ## Fitur
 
 - Monitoring tempat sampah secara real-time
