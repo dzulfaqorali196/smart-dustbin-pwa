@@ -1,18 +1,18 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { ChevronLeft, Plus } from 'lucide-react';
+import { Input } from '@/components/ui/input';
 import { supabase } from '@/lib/supabase/client';
-import { toast } from 'sonner';
 import { useAuthStore } from '@/store/auth-store';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { CheckCircle, ChevronLeft, Plus } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
+import * as z from 'zod';
 
 // Skema validasi form
 const formSchema = z.object({
@@ -58,7 +58,6 @@ export default function AddBinPage() {
     try {
       setIsSubmitting(true);
       
-      // Tambahkan tempat sampah ke database
       const { error } = await supabase
         .from('bins')
         .insert({
@@ -68,15 +67,26 @@ export default function AddBinPage() {
           longitude: values.longitude,
           max_capacity: values.max_capacity,
           user_id: user?.id,
-          current_capacity: 0
+          current_capacity: 0,
+          status: 'ACTIVE',
+          last_updated: new Date().toISOString(),
+          created_at: new Date().toISOString()
         });
       
       if (error) {
         throw error;
       }
       
-      toast.success('Tempat sampah berhasil ditambahkan');
-      router.push('/map');
+      toast.success(
+        'Tempat sampah berhasil ditambahkan dengan status aktif!', 
+        {
+          description: 'Tempat sampah siap untuk monitoring real-time',
+          duration: 4000,
+        }
+      );
+      
+      // Redirect ke halaman peta atau daftar bins
+      router.push('/dashboard/bins');
     } catch (error: Error | unknown) {
       console.error('Error adding bin:', error);
       toast.error('Gagal menambahkan tempat sampah: ' + (error instanceof Error ? error.message : 'Terjadi kesalahan'));
@@ -187,13 +197,41 @@ export default function AddBinPage() {
                   </FormItem>
                 )}
               />
+
+              {/* Status Info Card */}
+              <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                <div className="flex items-start gap-3">
+                  <CheckCircle className="w-5 h-5 text-green-600 mt-0.5" />
+                  <div>
+                    <h4 className="font-medium text-green-900">Status Tempat Sampah</h4>
+                    <p className="text-sm text-green-700 mt-1">
+                      Tempat sampah akan dibuat dengan status <strong>AKTIF</strong> dan siap untuk monitoring real-time.
+                    </p>
+                    <ul className="text-sm text-green-600 mt-2 list-disc list-inside">
+                      <li>Dapat menerima data dari sensor IoT</li>
+                      <li>Ditampilkan di peta dan dashboard</li>
+                      <li>Dapat mengirim notifikasi</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
               
               <Button 
                 type="submit" 
                 disabled={isSubmitting} 
                 className="w-full bg-green-700 hover:bg-green-800"
               >
-                {isSubmitting ? 'Menambahkan...' : 'Tambah Tempat Sampah'}
+                {isSubmitting ? (
+                  <div className="flex items-center justify-center">
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                    <span>Menambahkan...</span>
+                  </div>
+                ) : (
+                  <div className="flex items-center justify-center">
+                    <Plus className="w-4 h-4 mr-2" />
+                    <span>Tambah Tempat Sampah</span>
+                  </div>
+                )}
               </Button>
             </form>
           </Form>
@@ -201,4 +239,4 @@ export default function AddBinPage() {
       </Card>
     </div>
   );
-} 
+}
