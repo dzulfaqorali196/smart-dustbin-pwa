@@ -195,7 +195,7 @@ export default function DashboardBinsPage() {
               <Button 
                 variant="outline" 
                 className="border-green-200 text-green-800 hover:bg-green-50"
-                onClick={async () => {
+                onClick={async () => { 
                   setIsLoading(true);
                   try {
                     const data = await getAllBins();
